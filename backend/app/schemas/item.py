@@ -196,9 +196,9 @@ class BulkDeleteRequest(BaseModel):
 
     def model_post_init(self, __context):
         if not self.select_all and not self.item_ids:
-            raise ValueError("Either item_ids or select_all=True must be provided")
+            raise ValueError("Entweder item_ids oder select_all=True muss angegeben werden")
         if self.select_all and self.item_ids:
-            raise ValueError("Cannot use both item_ids and select_all")
+            raise ValueError("item_ids und select_all können nicht gleichzeitig verwendet werden")
 
 
 class BulkDeleteResponse(BaseModel):
@@ -218,9 +218,9 @@ class BulkAnalyzeRequest(BaseModel):
 
     def model_post_init(self, __context):
         if not self.select_all and not self.item_ids:
-            raise ValueError("Either item_ids or select_all=True must be provided")
+            raise ValueError("Entweder item_ids oder select_all=True muss angegeben werden")
         if self.select_all and self.item_ids:
-            raise ValueError("Cannot use both item_ids and select_all")
+            raise ValueError("item_ids und select_all können nicht gleichzeitig verwendet werden")
 
 
 class BulkAnalyzeResponse(BaseModel):

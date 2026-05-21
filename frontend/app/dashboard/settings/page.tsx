@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
+import { branding, unitSystemStorageKey } from '@/lib/branding';
 import {
   Select,
   SelectContent,
@@ -37,20 +38,29 @@ function convertMeasurement(value: number, key: string, from: string, to: string
   return Math.round((isWeight ? value * LBS_TO_KG : value * IN_TO_CM) * 10) / 10;
 }
 
+const BODY_MEASUREMENT_LABELS: Record<string, string> = {
+  height: 'Größe',
+  weight: 'Gewicht',
+  chest: 'Brustumfang',
+  waist: 'Taillenumfang',
+  hips: 'Hüftumfang',
+  inseam: 'Schrittlänge',
+};
+
 const BODY_MEASUREMENT_FIELDS = [
-  { key: 'height', unitMetric: 'cm', unitImperial: 'in', placeholderMetric: 'e.g. 178', placeholderImperial: 'e.g. 70' },
-  { key: 'weight', unitMetric: 'kg', unitImperial: 'lbs', placeholderMetric: 'e.g. 75', placeholderImperial: 'e.g. 165' },
-  { key: 'chest', unitMetric: 'cm', unitImperial: 'in', placeholderMetric: 'e.g. 96', placeholderImperial: 'e.g. 38' },
-  { key: 'waist', unitMetric: 'cm', unitImperial: 'in', placeholderMetric: 'e.g. 82', placeholderImperial: 'e.g. 32' },
-  { key: 'hips', unitMetric: 'cm', unitImperial: 'in', placeholderMetric: 'e.g. 98', placeholderImperial: 'e.g. 39' },
-  { key: 'inseam', unitMetric: 'cm', unitImperial: 'in', placeholderMetric: 'e.g. 81', placeholderImperial: 'e.g. 32' },
+  { key: 'height', unitMetric: 'cm', unitImperial: 'in', placeholderMetric: 'z. B. 178', placeholderImperial: 'z. B. 70' },
+  { key: 'weight', unitMetric: 'kg', unitImperial: 'lbs', placeholderMetric: 'z. B. 75', placeholderImperial: 'z. B. 165' },
+  { key: 'chest', unitMetric: 'cm', unitImperial: 'in', placeholderMetric: 'z. B. 96', placeholderImperial: 'z. B. 38' },
+  { key: 'waist', unitMetric: 'cm', unitImperial: 'in', placeholderMetric: 'z. B. 82', placeholderImperial: 'z. B. 32' },
+  { key: 'hips', unitMetric: 'cm', unitImperial: 'in', placeholderMetric: 'z. B. 98', placeholderImperial: 'z. B. 39' },
+  { key: 'inseam', unitMetric: 'cm', unitImperial: 'in', placeholderMetric: 'z. B. 81', placeholderImperial: 'z. B. 32' },
 ] as const;
 
 const SIZE_FIELDS = [
-  { key: 'shirt_size', label: 'Shirt Size', placeholder: 'e.g. M, L, XL' },
-  { key: 'pants_size', label: 'Pants Size', placeholder: 'e.g. 32, 34' },
-  { key: 'dress_size', label: 'Dress Size', placeholder: 'e.g. 8, 10' },
-  { key: 'shoe_size', label: 'Shoe Size', placeholder: 'e.g. 10, 42' },
+  { key: 'shirt_size', label: 'Oberteilgröße', placeholder: 'z. B. M, L, XL' },
+  { key: 'pants_size', label: 'Hosengröße', placeholder: 'z. B. 32, 34' },
+  { key: 'dress_size', label: 'Kleidergröße', placeholder: 'z. B. 8, 10' },
+  { key: 'shoe_size', label: 'Schuhgröße', placeholder: 'z. B. 10, 42' },
 ] as const;
 
 function getErrorMessage(e: unknown, fallback: string): string {
@@ -187,7 +197,7 @@ export default function SettingsPage() {
   const [measurementsDirty, setMeasurementsDirty] = useState(false);
   const [unitSystem, setUnitSystem] = useState<UnitSystem>(() => {
     if (typeof window !== 'undefined') {
-      return (localStorage.getItem('wardrowbe_unit_system') as UnitSystem) || 'metric';
+      return (localStorage.getItem(unitSystemStorageKey()) as UnitSystem) || 'metric';
     }
     return 'metric';
   });
@@ -218,7 +228,7 @@ export default function SettingsPage() {
 
   const handleGetCurrentLocation = () => {
     if (!navigator.geolocation) {
-      toast.error('Geolocation is not supported by your browser');
+      toast.error('Geolocation wird von deinem Browser nicht unterstützt');
       return;
     }
 
@@ -234,7 +244,7 @@ export default function SettingsPage() {
         try {
           const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
-            { headers: { 'User-Agent': 'WardrobeAI/1.0' } }
+            { headers: { 'User-Agent': branding.userAgent } }
           );
           if (response.ok) {
             const data = await response.json();
@@ -254,11 +264,11 @@ export default function SettingsPage() {
         }
 
         setIsGettingLocation(false);
-        toast.success('Location detected');
+        toast.success('Standort erkannt');
       },
       (error) => {
         setIsGettingLocation(false);
-        toast.error(`Failed to get location: ${error.message}`);
+        toast.error(`Standort konnte nicht ermittelt werden: ${error.message}`);
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -269,17 +279,17 @@ export default function SettingsPage() {
     const lon = parseFloat(locationLon);
 
     if (isNaN(lat) || isNaN(lon)) {
-      toast.error('Please enter valid latitude and longitude values');
+      toast.error('Bitte gib gültige Breiten- und Längengrad-Werte ein');
       return;
     }
 
     if (lat < -90 || lat > 90) {
-      toast.error('Latitude must be between -90 and 90');
+      toast.error('Breitengrad muss zwischen -90 und 90 liegen');
       return;
     }
 
     if (lon < -180 || lon > 180) {
-      toast.error('Longitude must be between -180 and 180');
+      toast.error('Längengrad muss zwischen -180 und 180 liegen');
       return;
     }
 
@@ -290,9 +300,9 @@ export default function SettingsPage() {
         location_name: locationName || undefined,
         timezone: timezone,
       });
-      toast.success('Location and timezone saved');
+      toast.success('Standort und Zeitzone gespeichert');
     } catch {
-      toast.error('Failed to save location');
+      toast.error('Standort konnte nicht gespeichert werden');
     }
   };
 
@@ -313,7 +323,7 @@ export default function SettingsPage() {
 
     const origPush = history.pushState.bind(history);
     history.pushState = function (...args) {
-      if (window.confirm('You have unsaved changes. Leave this page?')) {
+      if (window.confirm('Du hast ungespeicherte Änderungen. Seite verlassen?')) {
         origPush(...args);
       }
     };
@@ -342,7 +352,7 @@ export default function SettingsPage() {
     }
     setMeasurements(converted);
     setUnitSystem(newSystem);
-    localStorage.setItem('wardrowbe_unit_system', newSystem);
+    localStorage.setItem(unitSystemStorageKey(), newSystem);
   };
 
   const handleMeasurementChange = (key: string, value: string) => {
@@ -359,7 +369,7 @@ export default function SettingsPage() {
       if (numericKeys.includes(key)) {
         const num = parseFloat(trimmed);
         if (isNaN(num) || num <= 0) {
-          toast.error(`${key.charAt(0).toUpperCase() + key.slice(1)} must be a positive number`);
+          toast.error(`${key.charAt(0).toUpperCase() + key.slice(1)} muss eine positive Zahl sein`);
           return;
         }
         parsed[key] = convertMeasurement(num, key, unitSystem, 'metric');
@@ -372,9 +382,9 @@ export default function SettingsPage() {
         body_measurements: Object.keys(parsed).length > 0 ? parsed : null,
       });
       setMeasurementsDirty(false);
-      toast.success('Measurements saved');
+      toast.success('Maße gespeichert');
     } catch (e) {
-      toast.error(getErrorMessage(e, 'Failed to save measurements'));
+      toast.error(getErrorMessage(e, 'Maße konnten nicht gespeichert werden'));
     }
   };
 
@@ -395,7 +405,7 @@ export default function SettingsPage() {
     } catch (error) {
       setEndpointTests((prev) => ({
         ...prev,
-        [index]: { status: 'error', error: 'Failed to test endpoint' },
+        [index]: { status: 'error', error: 'Endpoint-Test fehlgeschlagen' },
       }));
     }
   };
@@ -451,7 +461,7 @@ export default function SettingsPage() {
   };
 
   const handleReset = async () => {
-    if (confirm('Reset all preferences to defaults?')) {
+    if (confirm('Alle Einstellungen auf Standard zurücksetzen?')) {
       try {
         await resetPreferences.mutateAsync();
       } catch (error) {
@@ -472,15 +482,15 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Einstellungen</h1>
           <p className="text-sm text-muted-foreground">
-            Manage your preferences and account settings
+            Verwalte deine Präferenzen und Kontoeinstellungen
           </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleReset} disabled={resetPreferences.isPending}>
             <RotateCcw className="mr-2 h-4 w-4" />
-            Reset
+            Zurücksetzen
           </Button>
           <Button size="sm" onClick={handleSave} disabled={!hasChanges || updatePreferences.isPending}>
             {updatePreferences.isPending ? (
@@ -488,7 +498,7 @@ export default function SettingsPage() {
             ) : (
               <Save className="mr-2 h-4 w-4" />
             )}
-            Save
+            Speichern
           </Button>
         </div>
       </div>
@@ -497,8 +507,8 @@ export default function SettingsPage() {
         {/* Account Section */}
         <Card>
           <CardHeader>
-            <CardTitle>Account</CardTitle>
-            <CardDescription>Your profile information</CardDescription>
+            <CardTitle>Konto</CardTitle>
+            <CardDescription>Deine Profilinformationen</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -507,7 +517,7 @@ export default function SettingsPage() {
                 <Input value={userProfile?.display_name || ''} disabled />
               </div>
               <div className="space-y-2">
-                <Label>Email</Label>
+                <Label>E-Mail</Label>
                 <Input value={userProfile?.email || ''} disabled />
               </div>
             </div>
@@ -519,65 +529,65 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MapPin className="h-5 w-5" />
-              Location
+              Standort
             </CardTitle>
             <CardDescription>
-              Set your location for weather-based outfit recommendations
+              Lege deinen Standort für wetterbasierte Outfit-Empfehlungen fest
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>City / Location Name (optional)</Label>
+              <Label>Stadt / Ortsname (optional)</Label>
               <Input
                 value={locationName}
                 onChange={(e) => setLocationName(e.target.value)}
-                placeholder="e.g., London, UK"
+                placeholder="z. B. Berlin, Deutschland"
               />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Latitude</Label>
+                <Label>Breitengrad</Label>
                 <Input
                   type="number"
                   step="0.000001"
                   value={locationLat}
                   onChange={(e) => setLocationLat(e.target.value)}
-                  placeholder="e.g., 51.5074"
+                  placeholder="z. B. 52.5200"
                 />
               </div>
               <div className="space-y-2">
-                <Label>Longitude</Label>
+                <Label>Längengrad</Label>
                 <Input
                   type="number"
                   step="0.000001"
                   value={locationLon}
                   onChange={(e) => setLocationLon(e.target.value)}
-                  placeholder="e.g., -0.1278"
+                  placeholder="z. B. 13.4050"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Timezone</Label>
+              <Label>Zeitzone</Label>
               <Select value={timezone} onValueChange={setTimezone}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select timezone" />
+                  <SelectValue placeholder="Zeitzone wählen" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="UTC">UTC</SelectItem>
-                  <SelectItem value="America/New_York">Eastern Time (US)</SelectItem>
-                  <SelectItem value="America/Chicago">Central Time (US)</SelectItem>
-                  <SelectItem value="America/Denver">Mountain Time (US)</SelectItem>
-                  <SelectItem value="America/Los_Angeles">Pacific Time (US)</SelectItem>
+                  <SelectItem value="America/New_York">Eastern Time (USA)</SelectItem>
+                  <SelectItem value="America/Chicago">Central Time (USA)</SelectItem>
+                  <SelectItem value="America/Denver">Mountain Time (USA)</SelectItem>
+                  <SelectItem value="America/Los_Angeles">Pacific Time (USA)</SelectItem>
                   <SelectItem value="Europe/London">London (UK)</SelectItem>
-                  <SelectItem value="Europe/Paris">Paris (EU Central)</SelectItem>
-                  <SelectItem value="Europe/Berlin">Berlin (EU Central)</SelectItem>
-                  <SelectItem value="Asia/Tokyo">Tokyo (Japan)</SelectItem>
+                  <SelectItem value="Europe/Paris">Paris (EU Mitte)</SelectItem>
+                  <SelectItem value="Europe/Berlin">Berlin (EU Mitte)</SelectItem>
+                  <SelectItem value="Asia/Tokyo">Tokio (Japan)</SelectItem>
                   <SelectItem value="Asia/Shanghai">Shanghai (China)</SelectItem>
-                  <SelectItem value="Asia/Kolkata">India (IST)</SelectItem>
+                  <SelectItem value="Asia/Kolkata">Indien (IST)</SelectItem>
                   <SelectItem value="Asia/Kathmandu">Nepal (NPT)</SelectItem>
-                  <SelectItem value="Asia/Dubai">Dubai (UAE)</SelectItem>
-                  <SelectItem value="Australia/Sydney">Sydney (Australia)</SelectItem>
-                  <SelectItem value="Pacific/Auckland">Auckland (NZ)</SelectItem>
+                  <SelectItem value="Asia/Dubai">Dubai (VAE)</SelectItem>
+                  <SelectItem value="Australia/Sydney">Sydney (Australien)</SelectItem>
+                  <SelectItem value="Pacific/Auckland">Auckland (Neuseeland)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -592,7 +602,7 @@ export default function SettingsPage() {
                 ) : (
                   <Navigation className="h-4 w-4 mr-2" />
                 )}
-                Use My Location
+                Meinen Standort verwenden
               </Button>
               <Button
                 onClick={handleSaveLocation}
@@ -603,12 +613,12 @@ export default function SettingsPage() {
                 ) : (
                   <Save className="h-4 w-4 mr-2" />
                 )}
-                Save Location
+                Standort speichern
               </Button>
             </div>
             {!locationLat && !locationLon && (
               <p className="text-sm text-amber-600 dark:text-amber-400">
-                Location is required for weather-based outfit recommendations.
+                Der Standort ist für wetterbasierte Outfit-Empfehlungen erforderlich.
               </p>
             )}
           </CardContent>
@@ -619,27 +629,27 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Ruler className="h-5 w-5" />
-              Body Measurements
+              Körpermaße
             </CardTitle>
-            <CardDescription>Help AI recommend better-fitting outfits</CardDescription>
+            <CardDescription>Hilf der KI, besser passende Outfits vorzuschlagen</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
-              <Label>Unit System</Label>
+              <Label>Maßsystem</Label>
               <Button variant="outline" size="sm" onClick={handleToggleUnits}>
-                {unitSystem === 'metric' ? 'Metric (cm/kg)' : 'Imperial (in/lbs)'}
+                {unitSystem === 'metric' ? 'Metrisch (cm/kg)' : 'Imperial (in/lbs)'}
               </Button>
             </div>
 
             <div>
-              <Label className="text-muted-foreground mb-3 block">Body</Label>
+              <Label className="text-muted-foreground mb-3 block">Körper</Label>
               <div className="grid gap-3 sm:grid-cols-2">
                 {BODY_MEASUREMENT_FIELDS.map((field) => {
                   const unit = unitSystem === 'metric' ? field.unitMetric : field.unitImperial;
                   const placeholder = unitSystem === 'metric' ? field.placeholderMetric : field.placeholderImperial;
                   return (
                     <div key={field.key} className="space-y-1">
-                      <Label className="text-sm capitalize">{field.key}</Label>
+                      <Label className="text-sm">{BODY_MEASUREMENT_LABELS[field.key] ?? field.key}</Label>
                       <div className="flex items-center gap-2">
                         <Input
                           type="number"
@@ -659,7 +669,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <Label className="text-muted-foreground mb-3 block">Sizes</Label>
+              <Label className="text-muted-foreground mb-3 block">Größen</Label>
               <div className="grid gap-3 sm:grid-cols-2">
                 {SIZE_FIELDS.map((field) => (
                   <div key={field.key} className="space-y-1">
@@ -681,9 +691,9 @@ export default function SettingsPage() {
                 size="sm"
               >
                 {updateUserProfile.isPending ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</>
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Wird gespeichert…</>
                 ) : (
-                  <><Save className="mr-2 h-4 w-4" />Save Measurements</>
+                  <><Save className="mr-2 h-4 w-4" />Maße speichern</>
                 )}
               </Button>
             )}
@@ -693,19 +703,19 @@ export default function SettingsPage() {
         {/* Color Preferences */}
         <Card>
           <CardHeader>
-            <CardTitle>Color Preferences</CardTitle>
+            <CardTitle>Farbvorlieben</CardTitle>
             <CardDescription>
-              Select colors you love and colors to avoid in recommendations
+              Wähle Farben, die du liebst, und Farben, die du in Empfehlungen vermeiden möchtest
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <ColorPicker
-              label="Favorite Colors"
+              label="Lieblingsfarben"
               selected={formData.color_favorites || []}
               onChange={(colors) => updateField('color_favorites', colors)}
             />
             <ColorPicker
-              label="Colors to Avoid"
+              label="Zu vermeidende Farben"
               selected={formData.color_avoid || []}
               onChange={(colors) => updateField('color_avoid', colors)}
             />
@@ -715,9 +725,9 @@ export default function SettingsPage() {
         {/* Style Profile */}
         <Card>
           <CardHeader>
-            <CardTitle>Style Profile</CardTitle>
+            <CardTitle>Stilprofil</CardTitle>
             <CardDescription>
-              Adjust how much you prefer each style in outfit recommendations
+              Passe an, wie stark jeder Stil in Outfit-Empfehlungen berücksichtigt wird
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -732,17 +742,17 @@ export default function SettingsPage() {
               onChange={(v) => updateStyleProfile('formal', v)}
             />
             <StyleSlider
-              label="Sporty"
+              label="Sportlich"
               value={formData.style_profile?.sporty ?? 50}
               onChange={(v) => updateStyleProfile('sporty', v)}
             />
             <StyleSlider
-              label="Minimalist"
+              label="Minimalistisch"
               value={formData.style_profile?.minimalist ?? 50}
               onChange={(v) => updateStyleProfile('minimalist', v)}
             />
             <StyleSlider
-              label="Bold"
+              label="Mutig"
               value={formData.style_profile?.bold ?? 50}
               onChange={(v) => updateStyleProfile('bold', v)}
             />
@@ -752,15 +762,15 @@ export default function SettingsPage() {
         {/* Temperature & Comfort */}
         <Card>
           <CardHeader>
-            <CardTitle>Temperature & Comfort</CardTitle>
+            <CardTitle>Temperatur & Komfort</CardTitle>
             <CardDescription>
-              Adjust how recommendations adapt to weather
+              Passe an, wie Empfehlungen auf das Wetter reagieren
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Temperature Unit</Label>
+                <Label>Temperatureinheit</Label>
                 <Select
                   value={formData.temperature_unit || 'celsius'}
                   onValueChange={(v) =>
@@ -777,7 +787,7 @@ export default function SettingsPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Temperature Sensitivity</Label>
+                <Label>Temperaturempfindlichkeit</Label>
                 <Select
                   value={formData.temperature_sensitivity || 'normal'}
                   onValueChange={(v) =>
@@ -788,16 +798,16 @@ export default function SettingsPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">I feel warm easily</SelectItem>
+                    <SelectItem value="low">Mir wird schnell warm</SelectItem>
                     <SelectItem value="normal">Normal</SelectItem>
-                    <SelectItem value="high">I feel cold easily</SelectItem>
+                    <SelectItem value="high">Mir wird schnell kalt</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Layering Preference</Label>
+                <Label>Schichten-Präferenz</Label>
                 <Select
                   value={formData.layering_preference || 'moderate'}
                   onValueChange={(v) =>
@@ -808,9 +818,9 @@ export default function SettingsPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="minimal">Minimal layers</SelectItem>
-                    <SelectItem value="moderate">Moderate layers</SelectItem>
-                    <SelectItem value="heavy">Heavy layers</SelectItem>
+                    <SelectItem value="minimal">Wenige Schichten</SelectItem>
+                    <SelectItem value="moderate">Moderate Schichten</SelectItem>
+                    <SelectItem value="heavy">Viele Schichten</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -824,7 +834,7 @@ export default function SettingsPage() {
                 return (
                   <>
                     <div className="space-y-2">
-                      <Label>Cold Threshold ({isFahrenheit ? '°F' : '°C'})</Label>
+                      <Label>Kälteschwelle ({isFahrenheit ? '°F' : '°C'})</Label>
                       <Input
                         type="number"
                         value={isFahrenheit ? Math.round(toF(coldC)) : coldC}
@@ -837,7 +847,7 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Hot Threshold ({isFahrenheit ? '°F' : '°C'})</Label>
+                      <Label>Wärmeschwelle ({isFahrenheit ? '°F' : '°C'})</Label>
                       <Input
                         type="number"
                         value={isFahrenheit ? Math.round(toF(hotC)) : hotC}
@@ -859,15 +869,15 @@ export default function SettingsPage() {
         {/* Recommendation Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Recommendation Settings</CardTitle>
+            <CardTitle>Empfehlungseinstellungen</CardTitle>
             <CardDescription>
-              Customize how outfit recommendations are generated
+              Passe an, wie Outfit-Empfehlungen erstellt werden
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Default Occasion</Label>
+                <Label>Standard-Anlass</Label>
                 <Select
                   value={formData.default_occasion || 'casual'}
                   onValueChange={(v) => updateField('default_occasion', v)}
@@ -885,7 +895,7 @@ export default function SettingsPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Variety Level</Label>
+                <Label>Abwechslungsgrad</Label>
                 <Select
                   value={formData.variety_level || 'moderate'}
                   onValueChange={(v) =>
@@ -896,16 +906,16 @@ export default function SettingsPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">Low (stick to favorites)</SelectItem>
-                    <SelectItem value="moderate">Moderate</SelectItem>
-                    <SelectItem value="high">High (try new combinations)</SelectItem>
+                    <SelectItem value="low">Niedrig (bei Favoriten bleiben)</SelectItem>
+                    <SelectItem value="moderate">Moderat</SelectItem>
+                    <SelectItem value="high">Hoch (neue Kombinationen ausprobieren)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Avoid Repeat Items Within (days)</Label>
+                <Label>Teile nicht wiederholen innerhalb (Tage)</Label>
                 <Input
                   type="number"
                   value={formData.avoid_repeat_days ?? 7}
@@ -915,7 +925,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Prefer Underused Items</Label>
+                <Label>Selten getragene Teile bevorzugen</Label>
                 <Select
                   value={formData.prefer_underused_items ? 'yes' : 'no'}
                   onValueChange={(v) => updateField('prefer_underused_items', v === 'yes')}
@@ -924,8 +934,8 @@ export default function SettingsPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="yes">Yes</SelectItem>
-                    <SelectItem value="no">No</SelectItem>
+                    <SelectItem value="yes">Ja</SelectItem>
+                    <SelectItem value="no">Nein</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -938,16 +948,16 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Server className="h-5 w-5" />
-              AI Endpoints
+              KI-Endpoints
             </CardTitle>
             <CardDescription>
-              Configure AI endpoints for image analysis. Endpoints are tried in order from top to bottom.
+              Konfiguriere KI-Endpoints für Bildanalyse. Endpoints werden von oben nach unten der Reihe nach ausprobiert.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {(formData.ai_endpoints || []).length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No custom endpoints configured. Using default server settings.
+                Keine benutzerdefinierten Endpoints konfiguriert. Standard-Servereinstellungen werden verwendet.
               </p>
             ) : (
               <div className="space-y-3">
@@ -1024,16 +1034,16 @@ export default function SettingsPage() {
                       {/* Status badges and test button */}
                       <div className="flex items-center gap-2 flex-wrap">
                         <Badge variant={endpoint.enabled ? 'default' : 'secondary'} className="text-xs">
-                          {endpoint.enabled ? 'Active' : 'Disabled'}
+                          {endpoint.enabled ? 'Aktiv' : 'Deaktiviert'}
                         </Badge>
                         {endpointTests[index]?.status === 'connected' && (
                           <Badge variant="outline" className="text-xs text-green-600 border-green-600">
-                            Connected
+                            Verbunden
                           </Badge>
                         )}
                         {endpointTests[index]?.status === 'error' && (
                           <Badge variant="outline" className="text-xs text-red-600 border-red-600">
-                            Error
+                            Fehler
                           </Badge>
                         )}
                         <Button
@@ -1046,7 +1056,7 @@ export default function SettingsPage() {
                           {endpointTests[index]?.status === 'testing' ? (
                             <Loader2 className="h-3 w-3 animate-spin mr-1" />
                           ) : null}
-                          Test Connection
+                          Verbindung testen
                         </Button>
                       </div>
                     </div>
@@ -1054,7 +1064,7 @@ export default function SettingsPage() {
                     {endpointTests[index]?.status === 'connected' && endpointTests[index]?.models && (
                       <div className="text-xs space-y-1 p-2 bg-green-50 dark:bg-green-950 rounded overflow-hidden">
                         <p className="font-medium text-green-700 dark:text-green-300">
-                          {endpointTests[index].models?.length} models available
+                          {endpointTests[index].models?.length} Modelle verfügbar
                         </p>
                         {endpointTests[index].visionModels && endpointTests[index].visionModels!.length > 0 && (
                           <p className="text-green-600 dark:text-green-400 truncate" title={endpointTests[index].visionModels?.join(', ')}>
@@ -1085,7 +1095,7 @@ export default function SettingsPage() {
                             updated[index] = { ...updated[index], name: e.target.value };
                             updateField('ai_endpoints', updated);
                           }}
-                          placeholder="e.g., Local Ollama"
+                          placeholder="z. B. Lokales Ollama"
                           className="h-8"
                         />
                       </div>
@@ -1103,7 +1113,7 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Vision Model</Label>
+                        <Label className="text-xs">Vision-Modell</Label>
                         <Input
                           value={endpoint.vision_model}
                           onChange={(e) => {
@@ -1116,7 +1126,7 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Text Model</Label>
+                        <Label className="text-xs">Text-Modell</Label>
                         <Input
                           value={endpoint.text_model}
                           onChange={(e) => {
@@ -1149,7 +1159,7 @@ export default function SettingsPage() {
                 }}
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Endpoint
+                Endpoint hinzufügen
               </Button>
               {hasChanges && (
                 <Button onClick={handleSave} disabled={updatePreferences.isPending}>
@@ -1158,7 +1168,7 @@ export default function SettingsPage() {
                   ) : (
                     <Save className="h-4 w-4 mr-2" />
                   )}
-                  Save
+                  Speichern
                 </Button>
               )}
             </div>

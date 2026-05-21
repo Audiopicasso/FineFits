@@ -25,15 +25,15 @@ export default function DashboardError({
               <AlertTriangle className="w-8 h-8 text-destructive" />
             </div>
             <h2 className="text-xl font-semibold mb-2">
-              Failed to load this page
+              Seite konnte nicht geladen werden
             </h2>
             <p className="text-muted-foreground mb-6 max-w-sm">
-              We encountered an error loading this content. This might be a
-              temporary issue.
+              Beim Laden dieses Inhalts ist ein Fehler aufgetreten. Das kann ein
+              vorübergehendes Problem sein.
             </p>
             <Button onClick={reset}>
               <RefreshCw className="w-4 h-4 mr-2" />
-              Try Again
+              Erneut versuchen
             </Button>
             {process.env.NODE_ENV === 'development' && (
               <pre className="mt-6 p-4 bg-muted rounded-lg text-left text-xs overflow-auto max-h-48 w-full">

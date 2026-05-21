@@ -64,13 +64,13 @@ import { useUserProfile } from '@/lib/hooks/use-user';
 import { OCCASIONS } from '@/lib/types';
 
 const DAYS = [
-  { value: 0, label: 'Monday' },
-  { value: 1, label: 'Tuesday' },
-  { value: 2, label: 'Wednesday' },
-  { value: 3, label: 'Thursday' },
-  { value: 4, label: 'Friday' },
-  { value: 5, label: 'Saturday' },
-  { value: 6, label: 'Sunday' },
+  { value: 0, label: 'Montag' },
+  { value: 1, label: 'Dienstag' },
+  { value: 2, label: 'Mittwoch' },
+  { value: 3, label: 'Donnerstag' },
+  { value: 4, label: 'Freitag' },
+  { value: 5, label: 'Samstag' },
+  { value: 6, label: 'Sonntag' },
 ];
 
 const CHANNEL_ICONS: Record<string, React.ReactNode> = {
@@ -82,7 +82,7 @@ const CHANNEL_ICONS: Record<string, React.ReactNode> = {
 const CHANNEL_LABELS: Record<string, string> = {
   ntfy: 'ntfy Push',
   mattermost: 'Mattermost',
-  email: 'Email',
+  email: 'E-Mail',
 };
 
 function ChannelCard({
@@ -110,7 +110,7 @@ function ChannelCard({
               <p className="font-medium">{CHANNEL_LABELS[setting.channel]}</p>
               <p className="text-sm text-muted-foreground">
                 {setting.channel === 'ntfy' && setting.config.topic}
-                {setting.channel === 'mattermost' && 'Webhook configured'}
+                {setting.channel === 'mattermost' && 'Webhook konfiguriert'}
                 {setting.channel === 'email' && setting.config.address}
               </p>
             </div>
@@ -129,9 +129,9 @@ function ChannelCard({
             ) : (
               <Send className="h-4 w-4 mr-1" />
             )}
-            Test
+            Testen
           </Button>
-          <Badge variant="secondary">Priority {setting.priority}</Badge>
+          <Badge variant="secondary">Priorität {setting.priority}</Badge>
           <Button
             variant="ghost"
             size="sm"
@@ -204,15 +204,15 @@ function AddChannelDialog({
 
     // Frontend validation
     if (channel === 'ntfy' && !config.topic?.trim()) {
-      toast.error('Topic is required for ntfy');
+      toast.error('Topic ist für ntfy erforderlich');
       return;
     }
     if (channel === 'mattermost' && !config.webhook_url?.trim()) {
-      toast.error('Webhook URL is required for Mattermost');
+      toast.error('Webhook-URL ist für Mattermost erforderlich');
       return;
     }
     if (channel === 'email' && !config.address?.trim()) {
-      toast.error('Email address is required');
+      toast.error('E-Mail-Adresse ist erforderlich');
       return;
     }
 
@@ -244,20 +244,20 @@ function AddChannelDialog({
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4 mr-2" />
-          Add Channel
+          Kanal hinzufügen
         </Button>
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add Notification Channel</DialogTitle>
+            <DialogTitle>Benachrichtigungskanal hinzufügen</DialogTitle>
             <DialogDescription>
-              Configure a new way to receive outfit recommendations.
+              Richte einen neuen Kanal für Outfit-Empfehlungen ein.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Channel Type</Label>
+              <Label>Kanaltyp</Label>
               <Select
                 value={channel}
                 onValueChange={(v: 'ntfy' | 'mattermost' | 'email') => {
@@ -269,9 +269,9 @@ function AddChannelDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ntfy">ntfy Push Notifications</SelectItem>
+                  <SelectItem value="ntfy">ntfy Push-Benachrichtigungen</SelectItem>
                   <SelectItem value="mattermost">Mattermost</SelectItem>
-                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="email">E-Mail</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -279,7 +279,7 @@ function AddChannelDialog({
             {channel === 'ntfy' && (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="server">Server URL</Label>
+                  <Label htmlFor="server">Server-URL</Label>
                   <Input
                     id="server"
                     value={config.server || 'https://ntfy.sh'}
@@ -297,11 +297,11 @@ function AddChannelDialog({
                     required
                   />
                   <p className="text-xs text-muted-foreground">
-                    Subscribe to this topic in your ntfy app
+                    Abonniere dieses Topic in deiner ntfy-App
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="token">Access Token</Label>
+                  <Label htmlFor="token">Zugriffstoken</Label>
                   <Input
                     id="token"
                     type="password"
@@ -310,7 +310,7 @@ function AddChannelDialog({
                     placeholder="tk_..."
                   />
                   <p className="text-xs text-muted-foreground">
-                    Required if your ntfy server uses authentication
+                    Erforderlich, wenn dein ntfy-Server Authentifizierung nutzt
                   </p>
                 </div>
               </>
@@ -327,14 +327,14 @@ function AddChannelDialog({
                   required
                 />
                 <p className="text-xs text-muted-foreground">
-                  Create an incoming webhook in Mattermost settings
+                  Erstelle einen eingehenden Webhook in den Mattermost-Einstellungen
                 </p>
               </div>
             )}
 
             {channel === 'email' && (
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address *</Label>
+                <Label htmlFor="email">E-Mail-Adresse *</Label>
                 <Input
                   id="email"
                   type="email"
@@ -348,16 +348,16 @@ function AddChannelDialog({
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={closeAndReset} disabled={isLoading}>
-              Cancel
+              Abbrechen
             </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Adding...
+                  Wird hinzugefügt…
                 </>
               ) : (
-                'Add Channel'
+                'Kanal hinzufügen'
               )}
             </Button>
           </DialogFooter>
@@ -417,12 +417,12 @@ function ScheduleCard({
             onCheckedChange={onToggleDayBefore}
           />
           <Label htmlFor={`daybefore-${schedule.id}`} className="text-sm cursor-pointer">
-            Notify day before
+            Am Vortag benachrichtigen
           </Label>
         </div>
         {schedule.notify_day_before && (
           <span className="text-xs text-muted-foreground">
-            {notifyDay?.label} evening
+            {notifyDay?.label} Abend
           </span>
         )}
       </div>
@@ -488,20 +488,20 @@ function AddScheduleDialog({
       <DialogTrigger asChild>
         <Button variant="outline">
           <Plus className="h-4 w-4 mr-2" />
-          Add Schedule
+          Zeitplan hinzufügen
         </Button>
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add Schedule</DialogTitle>
+            <DialogTitle>Zeitplan hinzufügen</DialogTitle>
             <DialogDescription>
-              Set up when you want to receive outfit recommendations.
+              Lege fest, wann du Outfit-Empfehlungen erhalten möchtest.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Day</Label>
+              <Label>Tag</Label>
               <Select
                 value={String(dayOfWeek)}
                 onValueChange={(v) => setDayOfWeek(parseInt(v))}
@@ -519,7 +519,7 @@ function AddScheduleDialog({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="time">Time</Label>
+              <Label htmlFor="time">Uhrzeit</Label>
               <Input
                 id="time"
                 type="time"
@@ -528,7 +528,7 @@ function AddScheduleDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label>Occasion</Label>
+              <Label>Anlass</Label>
               <Select value={occasion} onValueChange={setOccasion}>
                 <SelectTrigger>
                   <SelectValue />
@@ -544,9 +544,9 @@ function AddScheduleDialog({
             </div>
             <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
               <div className="space-y-0.5">
-                <Label htmlFor="notify-day-before">Notify day before</Label>
+                <Label htmlFor="notify-day-before">Am Vortag benachrichtigen</Label>
                 <p className="text-xs text-muted-foreground">
-                  Get notification the evening before with tomorrow&apos;s forecast
+                  Benachrichtigung am Vorabend mit der Wettervorhersage für morgen
                 </p>
               </div>
               <Switch
@@ -557,22 +557,22 @@ function AddScheduleDialog({
             </div>
             {notifyDayBefore && (
               <p className="text-sm text-muted-foreground bg-muted/30 p-2 rounded">
-                You&apos;ll receive the notification on <strong>{notifyDay?.label}</strong> at {time} for your <strong>{DAYS.find(d => d.value === dayOfWeek)?.label}</strong> outfit.
+                Du erhältst die Benachrichtigung am <strong>{notifyDay?.label}</strong> um {time} Uhr für dein <strong>{DAYS.find(d => d.value === dayOfWeek)?.label}</strong>-Outfit.
               </p>
             )}
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={closeAndReset} disabled={isLoading}>
-              Cancel
+              Abbrechen
             </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Adding...
+                  Wird hinzugefügt…
                 </>
               ) : (
-                'Add Schedule'
+                'Zeitplan hinzufügen'
               )}
             </Button>
           </DialogFooter>
@@ -602,9 +602,9 @@ export default function NotificationsPage() {
   const handleCreateChannel = async (data: ChannelFormData): Promise<void> => {
     try {
       await createSetting.mutateAsync(data);
-      toast.success('Notification channel added');
+      toast.success('Benachrichtigungskanal hinzugefügt');
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to add channel';
+      const message = error instanceof Error ? error.message : 'Kanal konnte nicht hinzugefügt werden';
       toast.error(message);
       throw error; // Re-throw so dialog knows it failed
     }
@@ -613,9 +613,9 @@ export default function NotificationsPage() {
   const handleCreateSchedule = async (data: ScheduleFormData): Promise<void> => {
     try {
       await createSchedule.mutateAsync(data);
-      toast.success('Schedule added');
+      toast.success('Zeitplan hinzugefügt');
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to add schedule';
+      const message = error instanceof Error ? error.message : 'Zeitplan konnte nicht hinzugefügt werden';
       toast.error(message);
       throw error; // Re-throw so dialog knows it failed
     }
@@ -625,9 +625,9 @@ export default function NotificationsPage() {
     setTestingId(id);
     try {
       const result = await testSetting.mutateAsync(id);
-      toast.success(result.message || 'Test notification sent');
+      toast.success(result.message || 'Testbenachrichtigung gesendet');
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Test failed';
+      const message = error instanceof Error ? error.message : 'Test fehlgeschlagen';
       toast.error(message);
     } finally {
       setTestingId(null);
@@ -637,9 +637,9 @@ export default function NotificationsPage() {
   const handleToggleChannel = async (id: string, enabled: boolean) => {
     try {
       await updateSetting.mutateAsync({ id, data: { enabled } });
-      toast.success(enabled ? 'Channel enabled' : 'Channel disabled');
+      toast.success(enabled ? 'Kanal aktiviert' : 'Kanal deaktiviert');
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to update';
+      const message = error instanceof Error ? error.message : 'Aktualisierung fehlgeschlagen';
       toast.error(message);
     }
   };
@@ -647,9 +647,9 @@ export default function NotificationsPage() {
   const handleToggleSchedule = async (id: string, enabled: boolean) => {
     try {
       await updateSchedule.mutateAsync({ id, data: { enabled } });
-      toast.success(enabled ? 'Schedule enabled' : 'Schedule disabled');
+      toast.success(enabled ? 'Zeitplan aktiviert' : 'Zeitplan deaktiviert');
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to update';
+      const message = error instanceof Error ? error.message : 'Aktualisierung fehlgeschlagen';
       toast.error(message);
     }
   };
@@ -657,9 +657,9 @@ export default function NotificationsPage() {
   const handleToggleDayBefore = async (id: string, notify_day_before: boolean) => {
     try {
       await updateSchedule.mutateAsync({ id, data: { notify_day_before } });
-      toast.success(notify_day_before ? 'Will notify day before' : 'Will notify same day');
+      toast.success(notify_day_before ? 'Benachrichtigung am Vortag' : 'Benachrichtigung am selben Tag');
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to update';
+      const message = error instanceof Error ? error.message : 'Aktualisierung fehlgeschlagen';
       toast.error(message);
     }
   };
@@ -670,13 +670,13 @@ export default function NotificationsPage() {
     try {
       if (deleteConfirm.type === 'channel') {
         await deleteSetting.mutateAsync(deleteConfirm.id);
-        toast.success('Channel deleted');
+        toast.success('Kanal gelöscht');
       } else {
         await deleteSchedule.mutateAsync(deleteConfirm.id);
-        toast.success('Schedule deleted');
+        toast.success('Zeitplan gelöscht');
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to delete';
+      const message = error instanceof Error ? error.message : 'Löschen fehlgeschlagen';
       toast.error(message);
     } finally {
       setDeleteConfirm(null);
@@ -686,9 +686,9 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Notifications</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Benachrichtigungen</h1>
         <p className="text-muted-foreground">
-          Configure how and when you receive outfit recommendations
+          Lege fest, wie und wann du Outfit-Empfehlungen erhältst
         </p>
       </div>
 
@@ -699,10 +699,10 @@ export default function NotificationsPage() {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Settings2 className="h-5 w-5" />
-                Notification Channels
+                Benachrichtigungskanäle
               </CardTitle>
               <CardDescription>
-                Add channels to receive your daily outfit recommendations
+                Füge Kanäle hinzu, um tägliche Outfit-Empfehlungen zu erhalten
               </CardDescription>
             </div>
             <AddChannelDialog onAdd={handleCreateChannel} isLoading={createSetting.isPending} userEmail={userProfile?.email} />
@@ -717,8 +717,8 @@ export default function NotificationsPage() {
           ) : settings?.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No notification channels configured</p>
-              <p className="text-sm">Add a channel to start receiving outfit suggestions</p>
+              <p>Keine Benachrichtigungskanäle konfiguriert</p>
+              <p className="text-sm">Füge einen Kanal hinzu, um Outfit-Vorschläge zu erhalten</p>
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">
@@ -744,10 +744,10 @@ export default function NotificationsPage() {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
-                Delivery Schedule
+                Lieferzeitplan
               </CardTitle>
               <CardDescription>
-                Set when you want to receive outfit recommendations each day
+                Lege fest, wann du täglich Outfit-Empfehlungen erhalten möchtest
               </CardDescription>
             </div>
             <AddScheduleDialog
@@ -765,8 +765,8 @@ export default function NotificationsPage() {
           ) : schedules?.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No schedules configured</p>
-              <p className="text-sm">Add a schedule to receive daily outfit suggestions</p>
+              <p>Keine Zeitpläne konfiguriert</p>
+              <p className="text-sm">Füge einen Zeitplan hinzu, um tägliche Outfit-Vorschläge zu erhalten</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -793,16 +793,16 @@ export default function NotificationsPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Delete {deleteConfirm?.type === 'channel' ? 'Notification Channel' : 'Schedule'}?
+              {deleteConfirm?.type === 'channel' ? 'Benachrichtigungskanal' : 'Zeitplan'} löschen?
             </AlertDialogTitle>
             <AlertDialogDescription>
               {deleteConfirm?.type === 'channel'
-                ? 'This will remove the notification channel. You can add it back later.'
-                : 'This will remove the schedule. You can create a new one later.'}
+                ? 'Der Benachrichtigungskanal wird entfernt. Du kannst ihn später wieder hinzufügen.'
+                : 'Der Zeitplan wird entfernt. Du kannst später einen neuen erstellen.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConfirmed}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -810,10 +810,10 @@ export default function NotificationsPage() {
               {deleteSetting.isPending || deleteSchedule.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Deleting...
+                  Wird gelöscht…
                 </>
               ) : (
-                'Delete'
+                'Löschen'
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -114,7 +114,7 @@ class TestMobileCallback:
         )
         assert response.status_code == 302
         location = response.headers["location"]
-        assert location.startswith("wardrowbe://auth/callback?")
+        assert location.startswith("finefits://auth/callback?")
         assert "code=test-auth-code" in location
         assert "state=test-state" in location
 
@@ -125,7 +125,7 @@ class TestMobileCallback:
             follow_redirects=False,
         )
         assert response.status_code == 302
-        assert response.headers["location"] == "wardrowbe://auth/callback"
+        assert response.headers["location"] == "finefits://auth/callback"
 
     @pytest.mark.asyncio
     async def test_mobile_callback_preserves_error_params(self, client: AsyncClient):
@@ -148,7 +148,7 @@ class TestMobileCallback:
         )
         assert response.status_code == 302
         location = response.headers["location"]
-        assert location.startswith("wardrowbe://")
+        assert location.startswith("finefits://")
         assert not location.startswith("https://evil.com")
 
 

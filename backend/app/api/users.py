@@ -62,7 +62,7 @@ async def update_profile(
             if key in numeric_keys and isinstance(value, (int, float)) and value <= 0:
                 raise HTTPException(
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail=f"{key} must be a positive number",
+                    detail=f"{key} muss eine positive Zahl sein",
                 )
 
     for field, value in update_data.items():

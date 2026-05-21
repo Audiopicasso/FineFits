@@ -17,8 +17,9 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    # Application
-    app_name: str = "Wardrowbe"
+    # Application / white-label branding
+    app_name: str = Field(default="FineFits")
+    mobile_app_scheme: str = Field(default="finefits")
     debug: bool = False
     secret_key: str = Field(default=DEFAULT_SECRET_KEY)
     studio_disabled: bool = False

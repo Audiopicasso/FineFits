@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { format, formatDistanceToNow, parseISO } from 'date-fns';
+import { de } from 'date-fns/locale';
 import {
   BookmarkPlus,
   CalendarPlus,
@@ -60,25 +61,25 @@ export default function OutfitDetailPage() {
   const handleWearToday = async () => {
     try {
       const result = await wearTodayMutation.mutateAsync({});
-      toast.success('Added to today');
+      toast.success('Für heute hinzugefügt');
       router.push(`/dashboard/outfits/${result.id}`);
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to wear today'));
+      toast.error(getErrorMessage(error, 'Heute tragen fehlgeschlagen'));
     }
   };
 
   const handleDelete = async () => {
-    if (!confirm('Delete this outfit? This cannot be undone.')) return;
+    if (!confirm('Dieses Outfit löschen? Das kann nicht rückgängig gemacht werden.')) return;
     try {
       await deleteMutation.mutateAsync(outfit.id);
-      toast.success('Outfit deleted');
+      toast.success('Outfit gelöscht');
       router.push('/dashboard/outfits');
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to delete'));
+      toast.error(getErrorMessage(error, 'Löschen fehlgeschlagen'));
     }
   };
 
-  const title = outfit.name || `${outfit.occasion} outfit`;
+  const title = outfit.name || `${outfit.occasion}-Outfit`;
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -86,7 +87,7 @@ export default function OutfitDetailPage() {
         <Button variant="ghost" size="sm" asChild>
           <Link href="/dashboard/outfits">
             <ChevronLeft className="h-4 w-4 mr-1" />
-            Back to Outfits
+            Zurück zu Outfits
           </Link>
         </Button>
       </div>
@@ -104,8 +105,9 @@ export default function OutfitDetailPage() {
             {outfit.scheduled_for
               ? formatDistanceToNow(parseISO(outfit.scheduled_for), {
                   addSuffix: true,
+                  locale: de,
                 })
-              : 'Lookbook template'}
+              : 'Lookbook-Vorlage'}
           </span>
         </div>
       </div>
@@ -115,7 +117,7 @@ export default function OutfitDetailPage() {
       <Card>
         <CardContent className="p-4">
           <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
-            Items ({outfit.items.length})
+            Teile ({outfit.items.length})
           </h2>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
             {outfit.items.map((item) => (
@@ -158,20 +160,20 @@ export default function OutfitDetailPage() {
             ) : (
               <CalendarPlus className="h-4 w-4 mr-2" />
             )}
-            Wear today
+            Heute tragen
           </Button>
         )}
         {!isTemplate && (
           <Button variant="outline" onClick={() => setCloneDialogOpen(true)}>
             <BookmarkPlus className="h-4 w-4 mr-2" />
-            Save to lookbook
+            Im Lookbook speichern
           </Button>
         )}
         {!isWorn && (
           <Button variant="outline" asChild>
             <Link href={`/dashboard/outfits/new?edit=${outfit.id}`}>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit
+              Bearbeiten
             </Link>
           </Button>
         )}
@@ -182,7 +184,7 @@ export default function OutfitDetailPage() {
           disabled={deleteMutation.isPending}
         >
           <Trash2 className="h-4 w-4 mr-2" />
-          Delete
+          Löschen
         </Button>
       </div>
 
@@ -190,8 +192,7 @@ export default function OutfitDetailPage() {
         <Card>
           <CardContent className="p-4">
             <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
-              Worn {wearInstancesData.total} time
-              {wearInstancesData.total === 1 ? '' : 's'}
+              {wearInstancesData.total === 1 ? '1× getragen' : `${wearInstancesData.total}× getragen`}
             </h2>
             <div className="space-y-2">
               {wearInstancesData.outfits.map((wear) => (
@@ -202,8 +203,8 @@ export default function OutfitDetailPage() {
                 >
                   <span className="text-sm">
                     {wear.scheduled_for
-                      ? format(parseISO(wear.scheduled_for), 'MMM d, yyyy')
-                      : 'Undated'}
+                      ? format(parseISO(wear.scheduled_for), 'd. MMM yyyy', { locale: de })
+                      : 'Ohne Datum'}
                   </span>
                   {wear.feedback?.rating && (
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -217,7 +218,7 @@ export default function OutfitDetailPage() {
             {wearInstancesData.has_more && (
               <Button variant="link" size="sm" asChild className="mt-2 px-0">
                 <Link href={`/dashboard/outfits?filter=worn&cloned_from=${outfit.id}`}>
-                  See all
+                  Alle anzeigen
                 </Link>
               </Button>
             )}
@@ -228,7 +229,7 @@ export default function OutfitDetailPage() {
       {isTemplate && wearInstancesData && wearInstancesData.total === 0 && (
         <Alert className="border-muted">
           <AlertDescription className="text-sm text-muted-foreground">
-            This look has not been worn yet. Click &quot;Wear today&quot; to log it.
+            Dieser Look wurde noch nicht getragen. Klicke auf „Heute tragen“, um ihn zu erfassen.
           </AlertDescription>
         </Alert>
       )}

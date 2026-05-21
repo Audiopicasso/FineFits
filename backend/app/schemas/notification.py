@@ -16,18 +16,18 @@ class NtfyConfig(BaseModel):
     @classmethod
     def validate_server(cls, v: str) -> str:
         if not v.startswith("http://") and not v.startswith("https://"):
-            raise ValueError("Server URL must start with http:// or https://")
+            raise ValueError("Server-URL muss mit http:// oder https:// beginnen")
         if len(v) > 500:
-            raise ValueError("Server URL must be 500 characters or fewer")
+            raise ValueError("Server-URL darf maximal 500 Zeichen lang sein")
         return v.rstrip("/")
 
     @field_validator("topic")
     @classmethod
     def validate_topic(cls, v: str) -> str:
         if not v or len(v) < 3:
-            raise ValueError("Topic must be at least 3 characters")
+            raise ValueError("Topic muss mindestens 3 Zeichen lang sein")
         if not v.replace("-", "").replace("_", "").isalnum():
-            raise ValueError("Topic can only contain letters, numbers, - and _")
+            raise ValueError("Topic darf nur Buchstaben, Zahlen, - und _ enthalten")
         return v
 
 
@@ -38,9 +38,9 @@ class MattermostConfig(BaseModel):
     @classmethod
     def validate_webhook(cls, v: str) -> str:
         if not v.startswith("https://"):
-            raise ValueError("Webhook URL must use HTTPS")
+            raise ValueError("Webhook-URL muss HTTPS verwenden")
         if "/hooks/" not in v:
-            raise ValueError("Invalid Mattermost webhook URL format")
+            raise ValueError("Ungültiges Mattermost-Webhook-URL-Format")
         return v
 
 
@@ -52,7 +52,7 @@ class EmailConfig(BaseModel):
     def validate_email(cls, v: str) -> str:
         pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         if not re.match(pattern, v):
-            raise ValueError("Invalid email address")
+            raise ValueError("Ungültige E-Mail-Adresse")
         return v
 
 
@@ -63,7 +63,7 @@ class ExpoPushConfig(BaseModel):
     @classmethod
     def validate_token(cls, v: str) -> str:
         if not v.startswith("ExponentPushToken[") and not v.startswith("ExpoPushToken["):
-            raise ValueError("Invalid Expo push token format")
+            raise ValueError("Ungültiges Expo-Push-Token-Format")
         return v
 
 
@@ -112,7 +112,7 @@ class ScheduleBase(BaseModel):
         v = v.strip().lower()
         if v not in VALID_OCCASIONS:
             raise ValueError(
-                f"Invalid occasion. Must be one of: {', '.join(sorted(VALID_OCCASIONS))}"
+                f"Ungültiger Anlass. Erlaubt: {', '.join(sorted(VALID_OCCASIONS))}"
             )
         return v
 
@@ -120,14 +120,14 @@ class ScheduleBase(BaseModel):
     @classmethod
     def validate_day(cls, v: int) -> int:
         if v < 0 or v > 6:
-            raise ValueError("day_of_week must be 0-6 (Monday-Sunday)")
+            raise ValueError("day_of_week muss 0–6 sein (Montag–Sonntag)")
         return v
 
     @field_validator("notification_time")
     @classmethod
     def validate_time(cls, v: str) -> str:
         if not re.match(r"^([01]?[0-9]|2[0-3]):[0-5][0-9]$", v):
-            raise ValueError("notification_time must be in HH:MM format")
+            raise ValueError("notification_time muss im Format HH:MM sein")
         return v
 
 
@@ -149,7 +149,7 @@ class ScheduleUpdate(BaseModel):
             v = v.strip().lower()
             if v not in VALID_OCCASIONS:
                 raise ValueError(
-                    f"Invalid occasion. Must be one of: {', '.join(sorted(VALID_OCCASIONS))}"
+                    f"Ungültiger Anlass. Erlaubt: {', '.join(sorted(VALID_OCCASIONS))}"
                 )
         return v
 
@@ -157,14 +157,14 @@ class ScheduleUpdate(BaseModel):
     @classmethod
     def validate_time(cls, v: str | None) -> str | None:
         if v is not None and not re.match(r"^([01]?[0-9]|2[0-3]):[0-5][0-9]$", v):
-            raise ValueError("notification_time must be in HH:MM format")
+            raise ValueError("notification_time muss im Format HH:MM sein")
         return v
 
     @field_validator("day_of_week")
     @classmethod
     def validate_day(cls, v: int | None) -> int | None:
         if v is not None and (v < 0 or v > 6):
-            raise ValueError("day_of_week must be 0-6 (Monday-Sunday)")
+            raise ValueError("day_of_week muss 0–6 sein (Montag–Sonntag)")
         return v
 
 

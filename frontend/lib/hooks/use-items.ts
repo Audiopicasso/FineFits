@@ -81,15 +81,15 @@ export function useCreateItem() {
         });
       } catch {
         if (!navigator.onLine) {
-          throw new NetworkError('You appear to be offline. Please check your connection.');
+          throw new NetworkError('Du scheinst offline zu sein. Bitte prüfe deine Verbindung.');
         }
-        throw new NetworkError('Unable to connect to server. Please try again.');
+        throw new NetworkError('Verbindung zum Server nicht möglich. Bitte versuche es erneut.');
       }
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
         throw new ApiError(
-          data.detail || 'Failed to create item',
+          data.detail || 'Teil konnte nicht erstellt werden',
           response.status,
           data
         );
@@ -342,7 +342,7 @@ export function useAddItemImage() {
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        throw new ApiError(data.detail || 'Failed to upload image', response.status, data);
+        throw new ApiError(data.detail || 'Bild konnte nicht hochgeladen werden', response.status, data);
       }
 
       return response.json() as Promise<ItemImage>;
@@ -648,10 +648,10 @@ export function useBulkCreateItems() {
               const response = JSON.parse(xhr.responseText) as BulkUploadResponse;
               resolve(response);
             } catch {
-              reject(new ApiError('Invalid response from server', xhr.status, {}));
+              reject(new ApiError('Ungültige Server-Antwort', xhr.status, {}));
             }
           } else {
-            let errorMessage = 'Failed to upload items';
+            let errorMessage = 'Teile konnten nicht hochgeladen werden';
             try {
               const errorData = JSON.parse(xhr.responseText);
               errorMessage = errorData.detail || errorMessage;
@@ -664,14 +664,14 @@ export function useBulkCreateItems() {
 
         xhr.addEventListener('error', () => {
           if (!navigator.onLine) {
-            reject(new NetworkError('You appear to be offline. Please check your connection.'));
+            reject(new NetworkError('Du scheinst offline zu sein. Bitte prüfe deine Verbindung.'));
           } else {
-            reject(new NetworkError('Unable to connect to server. Please try again.'));
+            reject(new NetworkError('Verbindung zum Server nicht möglich. Bitte versuche es erneut.'));
           }
         });
 
         xhr.addEventListener('abort', () => {
-          reject(new NetworkError('Upload was cancelled.'));
+          reject(new NetworkError('Upload wurde abgebrochen.'));
         });
 
         xhr.open('POST', '/api/v1/items/bulk');

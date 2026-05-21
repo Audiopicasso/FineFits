@@ -48,7 +48,7 @@ function WeatherCard() {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <Cloud className="h-4 w-4" />
-            Today&apos;s Weather
+            Heutiges Wetter
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -65,15 +65,15 @@ function WeatherCard() {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <Cloud className="h-4 w-4" />
-            Today&apos;s Weather
+            Heutiges Wetter
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground mb-3">
-            Location not set
+            Standort nicht festgelegt
           </p>
           <Button size="sm" variant="outline" asChild>
-            <Link href="/dashboard/settings">Set Location</Link>
+            <Link href="/dashboard/settings">Standort festlegen</Link>
           </Button>
         </CardContent>
       </Card>
@@ -85,14 +85,14 @@ function WeatherCard() {
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           <Cloud className="h-4 w-4" />
-          Today&apos;s Weather
+          Heutiges Wetter
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex items-baseline gap-2 mb-1">
           <span className="text-3xl font-bold">{displayValue(weather.temperature, unit)}{tempSymbol(unit)}</span>
           <span className="text-muted-foreground text-sm">
-            feels {displayValue(weather.feels_like, unit)}°
+            gefühlt {displayValue(weather.feels_like, unit)}°
           </span>
         </div>
         <p className="text-sm text-muted-foreground capitalize mb-1">
@@ -101,13 +101,13 @@ function WeatherCard() {
         {weather.precipitation_chance > 0 && (
           <p className="text-xs text-muted-foreground flex items-center gap-1">
             <Droplets className="h-3 w-3" />
-            {weather.precipitation_chance}% chance of rain
+            {weather.precipitation_chance}% Regenwahrscheinlichkeit
           </p>
         )}
         <Button size="sm" className="w-full mt-3" asChild>
           <Link href="/dashboard/suggest">
             <Sparkles className="h-4 w-4 mr-1" />
-            Get Outfit Suggestion
+            Outfit vorschlagen
           </Link>
         </Button>
       </CardContent>
@@ -123,18 +123,18 @@ function PendingOutfitsCard() {
   const handleAccept = async (id: string) => {
     try {
       await acceptOutfit.mutateAsync(id);
-      toast.success('Outfit accepted');
+      toast.success('Outfit angenommen');
     } catch {
-      toast.error('Failed to accept outfit');
+      toast.error('Outfit konnte nicht angenommen werden');
     }
   };
 
   const handleReject = async (id: string) => {
     try {
       await rejectOutfit.mutateAsync(id);
-      toast.success('Outfit rejected');
+      toast.success('Outfit abgelehnt');
     } catch {
-      toast.error('Failed to reject outfit');
+      toast.error('Outfit konnte nicht abgelehnt werden');
     }
   };
 
@@ -144,7 +144,7 @@ function PendingOutfitsCard() {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <Clock className="h-4 w-4" />
-            Pending Outfits
+            Ausstehende Outfits
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -163,12 +163,12 @@ function PendingOutfitsCard() {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 text-green-500" />
-            All Caught Up
+            Alles erledigt
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            No outfits waiting for your response
+            Keine Outfits warten auf deine Antwort
           </p>
         </CardContent>
       </Card>
@@ -181,12 +181,12 @@ function PendingOutfitsCard() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <Clock className="h-4 w-4 text-orange-500" />
-            Pending Outfits
+            Ausstehende Outfits
             <Badge variant="secondary" className="ml-1">{data?.total || pendingOutfits.length}</Badge>
           </CardTitle>
           {(data?.total ?? 0) > 2 && (
             <Link href="/dashboard/history" className="text-xs text-muted-foreground hover:text-foreground">
-              View all
+              Alle anzeigen
             </Link>
           )}
         </div>
@@ -219,7 +219,7 @@ function PendingOutfitsCard() {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium capitalize truncate">{outfit.occasion}</p>
               <p className="text-xs text-muted-foreground">
-                {outfit.scheduled_for ? new Date(outfit.scheduled_for).toLocaleDateString('en-US', {
+                {outfit.scheduled_for ? new Date(outfit.scheduled_for).toLocaleDateString('de-DE', {
                   weekday: 'short',
                   month: 'short',
                   day: 'numeric',
@@ -288,7 +288,7 @@ function NextScheduledCard() {
     return closest;
   }, [schedules]);
 
-  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const dayNames = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
 
   if (isLoading) {
     return (
@@ -296,7 +296,7 @@ function NextScheduledCard() {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            Next Scheduled
+            Nächster Termin
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -313,13 +313,13 @@ function NextScheduledCard() {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            Next Scheduled
+            Nächster Termin
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground mb-2">No schedules set up</p>
+          <p className="text-sm text-muted-foreground mb-2">Keine Zeitpläne eingerichtet</p>
           <Button size="sm" variant="outline" asChild>
-            <Link href="/dashboard/notifications">Set Up Schedule</Link>
+            <Link href="/dashboard/notifications">Zeitplan einrichten</Link>
           </Button>
         </CardContent>
       </Card>
@@ -328,7 +328,7 @@ function NextScheduledCard() {
 
   const { schedule, daysUntil } = nextSchedule;
   const timeStr = schedule.notification_time.slice(0, 5);
-  const dayStr = daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : dayNames[schedule.day_of_week];
+  const dayStr = daysUntil === 0 ? 'Heute' : daysUntil === 1 ? 'Morgen' : dayNames[schedule.day_of_week];
 
   return (
     <Card>
@@ -340,13 +340,13 @@ function NextScheduledCard() {
       </CardHeader>
       <CardContent>
         <p className="font-semibold">
-          {dayStr} at {timeStr}
+          {dayStr} um {timeStr}
         </p>
         <p className="text-sm text-muted-foreground capitalize">
-          {schedule.occasion} outfit
+          {schedule.occasion}-Outfit
         </p>
         {daysUntil === 0 && (
-          <Badge variant="secondary" className="mt-2">Coming up</Badge>
+          <Badge variant="secondary" className="mt-2">Bald fällig</Badge>
         )}
       </CardContent>
     </Card>
@@ -362,7 +362,7 @@ function NotificationStatusCard() {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <Bell className="h-4 w-4" />
-            Notifications
+            Benachrichtigungen
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -382,13 +382,13 @@ function NotificationStatusCard() {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <BellOff className="h-4 w-4 text-muted-foreground" />
-            Notifications
+            Benachrichtigungen
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground mb-2">No channels configured</p>
+          <p className="text-sm text-muted-foreground mb-2">Keine Kanäle konfiguriert</p>
           <Button size="sm" variant="outline" asChild>
-            <Link href="/dashboard/notifications">Add Channel</Link>
+            <Link href="/dashboard/notifications">Kanal hinzufügen</Link>
           </Button>
         </CardContent>
       </Card>
@@ -401,10 +401,10 @@ function NotificationStatusCard() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <Bell className="h-4 w-4" />
-            Notifications
+            Benachrichtigungen
           </CardTitle>
           <Link href="/dashboard/notifications" className="text-xs text-muted-foreground hover:text-foreground">
-            Configure
+            Konfigurieren
           </Link>
         </div>
       </CardHeader>
@@ -426,7 +426,7 @@ function NotificationStatusCard() {
           ))}
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          {enabledChannels.length} of {channels.length} active
+          {enabledChannels.length} von {channels.length} aktiv
         </p>
       </CardContent>
     </Card>
@@ -442,7 +442,7 @@ function WeeklySummaryCard() {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
-            This Week
+            Diese Woche
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -464,25 +464,25 @@ function WeeklySummaryCard() {
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           <TrendingUp className="h-4 w-4" />
-          This Week
+          Diese Woche
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-2xl font-bold">{wardrobe.outfits_this_week}</p>
-            <p className="text-xs text-muted-foreground">outfits</p>
+            <p className="text-xs text-muted-foreground">Outfits</p>
           </div>
           <div>
             <p className="text-2xl font-bold">
               {wardrobe.acceptance_rate ? `${wardrobe.acceptance_rate}%` : '-'}
             </p>
-            <p className="text-xs text-muted-foreground">accepted</p>
+            <p className="text-xs text-muted-foreground">angenommen</p>
           </div>
         </div>
         {wardrobe.average_rating && (
           <p className="text-xs text-muted-foreground mt-2">
-            Avg rating: {wardrobe.average_rating}/5
+            Ø-Bewertung: {wardrobe.average_rating}/5
           </p>
         )}
       </CardContent>
@@ -499,7 +499,7 @@ function InsightsCard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Lightbulb className="h-5 w-5" />
-            Insights
+            Erkenntnisse
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -520,11 +520,11 @@ function InsightsCard() {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Lightbulb className="h-5 w-5" />
-            Insights
+            Erkenntnisse
           </CardTitle>
           {insights.length > 3 && (
             <Link href="/dashboard/analytics" className="text-sm text-muted-foreground hover:text-foreground flex items-center">
-              View all <ChevronRight className="h-4 w-4" />
+              Alle anzeigen <ChevronRight className="h-4 w-4" />
             </Link>
           )}
         </div>
@@ -541,7 +541,7 @@ function InsightsCard() {
           </ul>
         ) : (
           <p className="text-muted-foreground text-sm">
-            Add more items and generate outfits to see personalized insights!
+            Füge mehr Teile hinzu und erstelle Outfits, um personalisierte Erkenntnisse zu sehen!
           </p>
         )}
       </CardContent>
@@ -564,20 +564,20 @@ function FamilyFeedCard() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <HeartHandshake className="h-5 w-5" />
-          Family Outfits
+          Familien-Outfits
         </CardTitle>
         <CardDescription>
-          See what your family is wearing and rate their outfits
+          Sieh, was deine Familie trägt, und bewerte ihre Outfits
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Users className="h-4 w-4" />
-          <span>{memberCount} member{memberCount !== 1 ? 's' : ''} in {family.name}</span>
+          <span>{memberCount} Mitglied{memberCount !== 1 ? 'er' : ''} in {family.name}</span>
         </div>
         <Button asChild className="w-full">
           <Link href="/dashboard/family/feed">
-            Browse Family Outfits
+            Familien-Outfits durchstöbern
             <ChevronRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>
@@ -590,20 +590,20 @@ function QuickActionsCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Quick Actions</CardTitle>
-        <CardDescription>Common tasks to get you started</CardDescription>
+        <CardTitle>Schnellaktionen</CardTitle>
+        <CardDescription>Häufige Aufgaben für den Einstieg</CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
         <Button asChild className="w-full justify-start">
           <Link href="/dashboard/wardrobe">
             <Plus className="mr-2 h-4 w-4" />
-            Add New Item
+            Neues Teil hinzufügen
           </Link>
         </Button>
         <Button asChild variant="outline" className="w-full justify-start">
           <Link href="/dashboard/suggest">
             <Sparkles className="mr-2 h-4 w-4" />
-            Get Outfit Suggestion
+            Outfit vorschlagen
           </Link>
         </Button>
       </CardContent>
@@ -618,10 +618,10 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">
-          Welcome back, {session?.user?.name?.split(' ')[0] || 'User'}
+          Willkommen zurück, {session?.user?.name?.split(' ')[0] || 'Nutzer'}
         </h1>
         <p className="text-muted-foreground">
-          Here&apos;s what&apos;s happening with your wardrobe
+          Das passiert gerade in deinem Kleiderschrank
         </p>
       </div>
 

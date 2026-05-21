@@ -18,6 +18,7 @@ import { OutfitHistoryCard } from '@/components/outfit-history-card';
 import { FeedbackDialog } from '@/components/feedback-dialog';
 import { OutfitPreviewDialog } from '@/components/outfit-preview-dialog';
 import { format, isSameDay, parseISO } from 'date-fns';
+import { de } from 'date-fns/locale';
 
 function EmptyHistory() {
   return (
@@ -25,13 +26,13 @@ function EmptyHistory() {
       <div className="rounded-full bg-muted p-6 mb-4">
         <Calendar className="h-12 w-12 text-muted-foreground" />
       </div>
-      <h3 className="text-lg font-semibold mb-2">No recommendation history</h3>
+      <h3 className="text-lg font-semibold mb-2">Kein Empfehlungsverlauf</h3>
       <p className="text-muted-foreground mb-6 max-w-sm">
-        Your outfit recommendation history will appear here once you start
-        receiving suggestions.
+        Dein Outfit-Empfehlungsverlauf erscheint hier, sobald du
+        Vorschläge erhältst.
       </p>
       <Button variant="outline" asChild>
-        <a href="/dashboard/suggest">Get Your First Suggestion</a>
+        <a href="/dashboard/suggest">Ersten Vorschlag holen</a>
       </Button>
     </div>
   );
@@ -42,7 +43,7 @@ function EmptyDate({ date }: { date: Date }) {
     <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
       <Calendar className="h-8 w-8 text-muted-foreground mb-2" />
       <p className="text-sm text-muted-foreground">
-        No outfits for {format(date, 'MMMM d, yyyy')}
+        Keine Outfits für {format(date, 'd. MMMM yyyy', { locale: de })}
       </p>
     </div>
   );
@@ -131,7 +132,7 @@ export default function HistoryPage() {
   if (isError) {
     return (
       <div className="text-center py-8 text-red-500">
-        Failed to load history. Please try again.
+        Verlauf konnte nicht geladen werden. Bitte versuche es erneut.
       </div>
     );
   }
@@ -141,9 +142,9 @@ export default function HistoryPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">History</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Verlauf</h1>
           <p className="text-muted-foreground">
-            View your past outfit recommendations
+            Deine vergangenen Outfit-Empfehlungen
           </p>
         </div>
       </div>
@@ -152,27 +153,27 @@ export default function HistoryPage() {
       <div className="flex gap-3 flex-wrap">
         <Select value={filters.occasion || 'all'} onValueChange={handleOccasionChange}>
           <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="All occasions" />
+            <SelectValue placeholder="Alle Anlässe" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All occasions</SelectItem>
+            <SelectItem value="all">Alle Anlässe</SelectItem>
             <SelectItem value="casual">Casual</SelectItem>
-            <SelectItem value="office">Office</SelectItem>
+            <SelectItem value="office">Büro</SelectItem>
             <SelectItem value="formal">Formal</SelectItem>
             <SelectItem value="date">Date</SelectItem>
-            <SelectItem value="workout">Workout</SelectItem>
+            <SelectItem value="workout">Sport</SelectItem>
           </SelectContent>
         </Select>
         <Select value={filters.status || 'all'} onValueChange={handleStatusChange}>
           <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="All status" />
+            <SelectValue placeholder="Alle Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All status</SelectItem>
-            <SelectItem value="accepted">Accepted</SelectItem>
-            <SelectItem value="rejected">Rejected</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="viewed">Viewed</SelectItem>
+            <SelectItem value="all">Alle Status</SelectItem>
+            <SelectItem value="accepted">Angenommen</SelectItem>
+            <SelectItem value="rejected">Abgelehnt</SelectItem>
+            <SelectItem value="pending">Ausstehend</SelectItem>
+            <SelectItem value="viewed">Angesehen</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -203,10 +204,10 @@ export default function HistoryPage() {
           {selectedDate && (
             <div className="border-b pb-3">
               <h2 className="text-lg font-semibold">
-                {format(selectedDate, 'EEEE, MMMM d')}
+                {format(selectedDate, 'EEEE, d. MMMM', { locale: de })}
               </h2>
               <p className="text-sm text-muted-foreground">
-                {selectedDateOutfits.length} outfit{selectedDateOutfits.length !== 1 ? 's' : ''}
+                {selectedDateOutfits.length} Outfit{selectedDateOutfits.length !== 1 ? 's' : ''}
               </p>
             </div>
           )}

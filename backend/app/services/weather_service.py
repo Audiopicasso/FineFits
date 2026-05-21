@@ -59,34 +59,34 @@ class DailyForecast:
 # WMO Weather interpretation codes
 # https://open-meteo.com/en/docs
 WMO_CODES = {
-    0: "sunny",
-    1: "mostly sunny",
-    2: "partly cloudy",
-    3: "cloudy",
-    45: "foggy",
-    48: "foggy",
-    51: "light drizzle",
-    53: "drizzle",
-    55: "heavy drizzle",
-    56: "freezing drizzle",
-    57: "freezing drizzle",
-    61: "light rain",
-    63: "rain",
-    65: "heavy rain",
-    66: "freezing rain",
-    67: "freezing rain",
-    71: "light snow",
-    73: "snow",
-    75: "heavy snow",
-    77: "snow grains",
-    80: "light showers",
-    81: "showers",
-    82: "heavy showers",
-    85: "light snow showers",
-    86: "snow showers",
-    95: "thunderstorm",
-    96: "thunderstorm with hail",
-    99: "thunderstorm with hail",
+    0: "sonnig",
+    1: "überwiegend sonnig",
+    2: "teilweise bewölkt",
+    3: "bewölkt",
+    45: "nebelig",
+    48: "nebelig",
+    51: "leichter Nieselregen",
+    53: "Nieselregen",
+    55: "starker Nieselregen",
+    56: "gefrierender Nieselregen",
+    57: "gefrierender Nieselregen",
+    61: "leichter Regen",
+    63: "Regen",
+    65: "starker Regen",
+    66: "Gefrierregen",
+    67: "Gefrierregen",
+    71: "leichter Schneefall",
+    73: "Schnee",
+    75: "starker Schneefall",
+    77: "Schneegriesel",
+    80: "leichte Schauer",
+    81: "Schauer",
+    82: "starke Schauer",
+    85: "leichte Schneeschauer",
+    86: "Schneeschauer",
+    95: "Gewitter",
+    96: "Gewitter mit Hagel",
+    99: "Gewitter mit Hagel",
 }
 
 
@@ -130,13 +130,13 @@ class WeatherService:
     def _validate_coordinates(self, latitude: float, longitude: float) -> None:
         """Validate latitude and longitude bounds."""
         if not -90 <= latitude <= 90:
-            raise ValueError(f"Invalid latitude {latitude}: must be between -90 and 90")
+            raise ValueError(f"Ungültiger Breitengrad {latitude}: muss zwischen -90 und 90 liegen")
         if not -180 <= longitude <= 180:
-            raise ValueError(f"Invalid longitude {longitude}: must be between -180 and 180")
+            raise ValueError(f"Ungültiger Längengrad {longitude}: muss zwischen -180 und 180 liegen")
 
     def _interpret_weather_code(self, code: int) -> str:
         """Convert WMO weather code to human-readable condition."""
-        return WMO_CODES.get(code, "unknown")
+        return WMO_CODES.get(code, "unbekannt")
 
     async def get_current_weather(
         self, latitude: float, longitude: float, use_cache: bool = True
@@ -344,7 +344,7 @@ class WeatherService:
         except Exception as e:
             return {"status": "unhealthy", "error": str(e)}
 
-        return {"status": "unhealthy", "error": "Unknown error"}
+        return {"status": "unhealthy", "error": "Unbekannter Fehler"}
 
 
 class WeatherServiceError(Exception):

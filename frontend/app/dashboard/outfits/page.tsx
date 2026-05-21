@@ -89,12 +89,12 @@ const CHIP_ORDER: FilterChip[] = [
 ];
 
 const CHIP_LABELS: Record<FilterChip, string> = {
-  all: 'All',
-  'my-looks': 'My Looks',
-  worn: 'Worn',
-  pairings: 'Pairings',
-  replacements: 'Replacements',
-  ai: 'AI',
+  all: 'Alle',
+  'my-looks': 'Meine Looks',
+  worn: 'Getragen',
+  pairings: 'Kombinationen',
+  replacements: 'Ersatz',
+  ai: 'KI',
 };
 
 function chipToFilters(chip: FilterChip, search: string): OutfitFilters {
@@ -124,12 +124,12 @@ function chipToFilters(chip: FilterChip, search: string): OutfitFilters {
 }
 
 const EMPTY_MESSAGES: Record<FilterChip, string> = {
-  all: 'No outfits yet. Create your first look in the Studio!',
-  'my-looks': 'No saved looks yet. Create one with the Studio editor.',
-  worn: 'No worn outfits recorded.',
-  pairings: 'No pairing outfits generated.',
-  replacements: 'No replacement outfits.',
-  ai: 'No AI-generated outfits.',
+  all: 'Noch keine Outfits. Erstelle deinen ersten Look im Studio!',
+  'my-looks': 'Noch keine gespeicherten Looks. Erstelle einen im Studio-Editor.',
+  worn: 'Keine getragenen Outfits erfasst.',
+  pairings: 'Keine Kombinations-Outfits erstellt.',
+  replacements: 'Keine Ersatz-Outfits.',
+  ai: 'Keine KI-generierten Outfits.',
 };
 
 function OutfitsPageContent() {
@@ -294,13 +294,13 @@ function OutfitsPageContent() {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Outfits</h1>
-          <p className="text-muted-foreground">Your looks, worn outfits, and AI suggestions</p>
+          <p className="text-muted-foreground">Deine Looks, getragene Outfits und KI-Vorschläge</p>
         </div>
         <div className="flex items-center gap-3">
           <div
             className="inline-flex rounded-full border-2 border-muted overflow-hidden"
             role="group"
-            aria-label="View toggle"
+            aria-label="Ansicht umschalten"
           >
             <button
               type="button"
@@ -314,7 +314,7 @@ function OutfitsPageContent() {
               )}
             >
               <ListIcon className="h-3.5 w-3.5" />
-              List
+              Liste
             </button>
             <button
               type="button"
@@ -328,13 +328,13 @@ function OutfitsPageContent() {
               )}
             >
               <CalendarDays className="h-3.5 w-3.5" />
-              Calendar
+              Kalender
             </button>
           </div>
           <Button asChild>
             <Link href="/dashboard/outfits/new">
               <Plus className="h-4 w-4 mr-2" />
-              New Outfit
+              Neues Outfit
             </Link>
           </Button>
         </div>
@@ -364,7 +364,7 @@ function OutfitsPageContent() {
           <div className="relative ml-auto min-w-[220px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search lookbook..."
+              placeholder="Lookbook durchsuchen…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 h-9"
@@ -374,7 +374,7 @@ function OutfitsPageContent() {
 
         {listQuery.data && (
           <Badge variant="outline" className="ml-auto">
-            {listQuery.data.total} total
+            {listQuery.data.total} gesamt
           </Badge>
         )}
       </div>
@@ -383,7 +383,7 @@ function OutfitsPageContent() {
       {view === 'list' ? (
         <>
           {listError ? (
-            <div className="text-center py-8 text-destructive">Failed to load outfits</div>
+            <div className="text-center py-8 text-destructive">Outfits konnten nicht geladen werden</div>
           ) : listLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -397,7 +397,7 @@ function OutfitsPageContent() {
                 <Button asChild>
                   <Link href="/dashboard/outfits/new">
                     <Plus className="h-4 w-4 mr-2" />
-                    New Outfit
+                    Neues Outfit
                   </Link>
                 </Button>
               )}
@@ -412,7 +412,7 @@ function OutfitsPageContent() {
               {hasMore && (
                 <div className="flex justify-center pt-4">
                   <Button variant="outline" onClick={() => setPage((p) => p + 1)}>
-                    Load more
+                    Mehr laden
                   </Button>
                 </div>
               )}
@@ -453,7 +453,7 @@ function OutfitsPageContent() {
 
           <div className="space-y-4">
             {calendarError ? (
-              <div className="text-center py-8 text-destructive">Failed to load outfits</div>
+              <div className="text-center py-8 text-destructive">Outfits konnten nicht geladen werden</div>
             ) : calendarLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Array.from({ length: 4 }).map((_, i) => (
@@ -464,7 +464,7 @@ function OutfitsPageContent() {
               <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
                 <CalendarDays className="h-8 w-8 text-muted-foreground mb-2" />
                 <p className="text-sm text-muted-foreground">
-                  No outfits on this day
+                  Keine Outfits an diesem Tag
                 </p>
               </div>
             ) : (
@@ -475,13 +475,13 @@ function OutfitsPageContent() {
                       {formatReadableDate(selectedDate)}
                     </h2>
                     <p className="text-sm text-muted-foreground">
-                      {selectedDayOutfits.length} outfit{selectedDayOutfits.length === 1 ? '' : 's'}
+                      {selectedDayOutfits.length} Outfit{selectedDayOutfits.length === 1 ? '' : 's'}
                     </p>
                   </div>
                 )}
                 {!selectedDate && (
                   <p className="text-sm text-muted-foreground">
-                    {calendarOutfits.length} outfit{calendarOutfits.length === 1 ? '' : 's'} this month
+                    {calendarOutfits.length} Outfit{calendarOutfits.length === 1 ? '' : 's'} in diesem Monat
                   </p>
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -504,7 +504,7 @@ function parseYmd(dateKey: string): Date {
 }
 
 function formatReadableDate(dateKey: string): string {
-  return parseYmd(dateKey).toLocaleDateString(undefined, {
+  return parseYmd(dateKey).toLocaleDateString('de-DE', {
     weekday: 'short',
     month: 'short',
     day: 'numeric',

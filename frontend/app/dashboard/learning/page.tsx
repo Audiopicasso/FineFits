@@ -110,6 +110,13 @@ function LoadingSkeleton() {
   );
 }
 
+const WEATHER_TYPE_LABELS: Record<string, string> = {
+  cold: 'Kalt',
+  cool: 'Kühl',
+  mild: 'Mild',
+  hot: 'Heiß',
+};
+
 const colorMap: Record<string, string> = {
   black: 'bg-gray-900',
   white: 'bg-gray-100 border',
@@ -223,7 +230,7 @@ function ItemPairCard({ pair }: { pair: ItemPair }) {
           <span className="font-medium">{successRate}%</span>
         </div>
         <div className="text-xs text-muted-foreground">
-          {pair.times_paired}x paired
+          {pair.times_paired}× kombiniert
         </div>
       </div>
     </div>
@@ -260,7 +267,7 @@ function InsightCard({
       <button
         onClick={() => onAcknowledge(insight.id)}
         className="absolute top-2 right-2 p-1 rounded hover:bg-muted transition-colors"
-        title="Dismiss"
+        title="Ausblenden"
       >
         <X className="h-4 w-4 text-muted-foreground" />
       </button>
@@ -274,7 +281,7 @@ function InsightCard({
               {insight.category}
             </Badge>
             <span className="text-xs text-muted-foreground">
-              {Math.round(insight.confidence * 100)}% confidence
+              {Math.round(insight.confidence * 100)}% Sicherheit
             </span>
           </div>
         </div>
@@ -288,16 +295,16 @@ function NoLearningData({ onRecompute, isRefreshing }: { onRecompute: () => void
     <Card className="col-span-full">
       <CardContent className="flex flex-col items-center justify-center py-12 text-center">
         <Brain className="h-12 w-12 text-muted-foreground mb-4" />
-        <h3 className="text-lg font-semibold mb-2">No Learning Data Yet</h3>
+        <h3 className="text-lg font-semibold mb-2">Noch keine Lerndaten</h3>
         <p className="text-muted-foreground max-w-md mb-4">
-          Start by accepting or rejecting outfit suggestions and rating them.
-          The AI will learn from your feedback to make better recommendations.
+          Nimm Outfit-Vorschläge an oder lehne sie ab und bewerte sie.
+          Die KI lernt aus deinem Feedback, um bessere Empfehlungen zu geben.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <Link href="/dashboard/suggest" className="w-full sm:w-auto">
             <Button className="w-full sm:w-auto">
               <Sparkles className="h-4 w-4 mr-2" />
-              Get Outfit Suggestions
+              Outfit-Vorschläge holen
             </Button>
           </Link>
           <Button
@@ -307,11 +314,11 @@ function NoLearningData({ onRecompute, isRefreshing }: { onRecompute: () => void
             className="w-full sm:w-auto"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-            {isRefreshing ? 'Computing...' : 'Compute Now'}
+            {isRefreshing ? 'Wird berechnet…' : 'Jetzt berechnen'}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-4">
-          Already gave feedback? Click &quot;Compute Now&quot; to process it.
+          Schon Feedback gegeben? Klicke auf „Jetzt berechnen“, um es zu verarbeiten.
         </p>
       </CardContent>
     </Card>
@@ -347,8 +354,8 @@ export default function LearningPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">AI Learning</h1>
-            <p className="text-muted-foreground">How the AI learns from your feedback</p>
+            <h1 className="text-2xl font-bold tracking-tight">KI-Lernen</h1>
+            <p className="text-muted-foreground">Wie die KI aus deinem Feedback lernt</p>
           </div>
         </div>
         <LoadingSkeleton />
@@ -359,7 +366,7 @@ export default function LearningPage() {
   if (isError || !data) {
     return (
       <div className="text-center py-8 text-red-500">
-        Failed to load learning data. Please try again.
+        Lerndaten konnten nicht geladen werden. Bitte versuche es erneut.
       </div>
     );
   }
@@ -370,11 +377,11 @@ export default function LearningPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">AI Learning</h1>
+          <h1 className="text-2xl font-bold tracking-tight">KI-Lernen</h1>
           <p className="text-muted-foreground">
             {profile.has_learning_data
-              ? 'The AI learns from your feedback to improve recommendations'
-              : 'Start rating outfits to help the AI learn your preferences'}
+              ? 'Die KI lernt aus deinem Feedback, um Empfehlungen zu verbessern'
+              : 'Bewerte Outfits, damit die KI deine Vorlieben lernt'}
           </p>
         </div>
         {profile.has_learning_data && (
@@ -384,7 +391,7 @@ export default function LearningPage() {
             disabled={isRefreshing}
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-            Recompute
+            Neu berechnen
           </Button>
         )}
       </div>
@@ -396,32 +403,32 @@ export default function LearningPage() {
           {/* Stats Cards */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard
-              title="Feedback Given"
+              title="Feedback gegeben"
               value={profile.feedback_count}
-              description={`${profile.outfits_rated} outfits rated`}
+              description={`${profile.outfits_rated} Outfits bewertet`}
               icon={Activity}
             />
             <StatCard
-              title="Acceptance Rate"
+              title="Annahmerate"
               value={profile.overall_acceptance_rate
                 ? `${Math.round(profile.overall_acceptance_rate * 100)}%`
                 : '-'}
               description={profile.overall_acceptance_rate
-                ? 'of suggestions accepted'
-                : 'Not enough data'}
+                ? 'der Vorschläge angenommen'
+                : 'Nicht genug Daten'}
               icon={TrendingUp}
               trend={profile.overall_acceptance_rate && profile.overall_acceptance_rate > 0.5 ? 'up' : undefined}
             />
             <StatCard
-              title="Average Rating"
+              title="Durchschnittsbewertung"
               value={profile.average_rating ? profile.average_rating.toFixed(1) : '-'}
-              description={profile.average_rating ? 'out of 5 stars' : 'Rate more outfits'}
+              description={profile.average_rating ? 'von 5 Sternen' : 'Bewerte mehr Outfits'}
               icon={Sparkles}
             />
             <StatCard
-              title="Style Rating"
+              title="Stil-Bewertung"
               value={profile.average_style_rating ? profile.average_style_rating.toFixed(1) : '-'}
-              description={profile.average_style_rating ? 'style satisfaction' : 'Rate outfit styles'}
+              description={profile.average_style_rating ? 'Stilzufriedenheit' : 'Outfit-Stile bewerten'}
               icon={Heart}
             />
           </div>
@@ -433,13 +440,13 @@ export default function LearningPage() {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <Lightbulb className="h-5 w-5" />
-                    Style Insights
+                    Stil-Erkenntnisse
                   </CardTitle>
-                  <CardDescription>What we&apos;ve learned about your preferences</CardDescription>
+                  <CardDescription>Was wir über deine Vorlieben gelernt haben</CardDescription>
                 </div>
                 <Button variant="ghost" size="sm" onClick={handleGenerateInsights}>
                   <RefreshCw className="h-4 w-4 mr-1" />
-                  New Insights
+                  Neue Erkenntnisse
                 </Button>
               </CardHeader>
               <CardContent>
@@ -462,14 +469,14 @@ export default function LearningPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Sparkles className="h-5 w-5" />
-                  Learned Color Preferences
+                  Gelernte Farbvorlieben
                 </CardTitle>
-                <CardDescription>Colors you tend to accept or reject</CardDescription>
+                <CardDescription>Farben, die du eher annimmst oder ablehnst</CardDescription>
               </CardHeader>
               <CardContent>
                 {profile.color_preferences.length === 0 ? (
                   <p className="text-muted-foreground text-sm">
-                    Not enough feedback to determine color preferences yet.
+                    Noch nicht genug Feedback für Farbvorlieben.
                   </p>
                 ) : (
                   <div className="space-y-3">
@@ -486,14 +493,14 @@ export default function LearningPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Heart className="h-5 w-5" />
-                  Learned Style Preferences
+                  Gelernte Stilvorlieben
                 </CardTitle>
-                <CardDescription>Styles that match your taste</CardDescription>
+                <CardDescription>Stile, die zu deinem Geschmack passen</CardDescription>
               </CardHeader>
               <CardContent>
                 {profile.style_preferences.length === 0 ? (
                   <p className="text-muted-foreground text-sm">
-                    Not enough feedback to determine style preferences yet.
+                    Noch nicht genug Feedback für Stilvorlieben.
                   </p>
                 ) : (
                   <div className="space-y-3">
@@ -527,9 +534,9 @@ export default function LearningPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Heart className="h-5 w-5 text-red-500" />
-                  Your Best Combinations
+                  Deine besten Kombinationen
                 </CardTitle>
-                <CardDescription>Item pairs that you consistently love together</CardDescription>
+                <CardDescription>Teil-Paare, die du immer wieder gerne zusammen trägst</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -547,9 +554,9 @@ export default function LearningPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="h-5 w-5" />
-                  Occasion Patterns
+                  Anlass-Muster
                 </CardTitle>
-                <CardDescription>What works for different occasions</CardDescription>
+                <CardDescription>Was für verschiedene Anlässe funktioniert</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -558,12 +565,12 @@ export default function LearningPage() {
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium capitalize">{pattern.occasion}</h4>
                         <Badge variant="outline">
-                          {Math.round(pattern.success_rate * 100)}% success
+                          {Math.round(pattern.success_rate * 100)}% Erfolg
                         </Badge>
                       </div>
                       {pattern.preferred_colors.length > 0 && (
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-xs text-muted-foreground">Preferred colors:</span>
+                          <span className="text-xs text-muted-foreground">Bevorzugte Farben:</span>
                           <div className="flex gap-1">
                             {pattern.preferred_colors.map((color) => (
                               <div
@@ -588,9 +595,9 @@ export default function LearningPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Cloud className="h-5 w-5" />
-                  Weather Preferences
+                  Wettervorlieben
                 </CardTitle>
-                <CardDescription>How you dress for different conditions</CardDescription>
+                <CardDescription>Wie du dich bei verschiedenen Bedingungen kleidest</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -602,9 +609,9 @@ export default function LearningPage() {
                         {pref.weather_type === 'mild' && '🌤️'}
                         {pref.weather_type === 'hot' && '☀️'}
                       </div>
-                      <h4 className="font-medium capitalize">{pref.weather_type}</h4>
+                      <h4 className="font-medium">{WEATHER_TYPE_LABELS[pref.weather_type] ?? pref.weather_type}</h4>
                       <p className="text-sm text-muted-foreground mt-1">
-                        ~{pref.preferred_layers.toFixed(1)} layers
+                        ~{pref.preferred_layers.toFixed(1)} Schichten
                       </p>
                       <Badge variant="outline" className="mt-2">
                         {Math.round(pref.success_rate * 100)}% success
@@ -622,17 +629,17 @@ export default function LearningPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Lightbulb className="h-5 w-5 text-primary" />
-                  Suggested Preference Updates
+                  Vorgeschlagene Präferenz-Updates
                 </CardTitle>
                 <CardDescription>
-                  Based on your feedback, we suggest updating your preferences
+                  Basierend auf deinem Feedback schlagen wir vor, deine Präferenzen anzupassen
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {preference_suggestions.suggestions.suggested_favorite_colors && (
                     <div className="flex items-center gap-3">
-                      <span className="text-sm">Add to favorite colors:</span>
+                      <span className="text-sm">Zu Lieblingsfarben hinzufügen:</span>
                       <div className="flex gap-2">
                         {preference_suggestions.suggestions.suggested_favorite_colors.map((color) => (
                           <Badge key={color} variant="secondary" className="capitalize">
@@ -645,7 +652,7 @@ export default function LearningPage() {
                   )}
                   {preference_suggestions.suggestions.suggested_avoid_colors && (
                     <div className="flex items-center gap-3">
-                      <span className="text-sm">Add to colors to avoid:</span>
+                      <span className="text-sm">Zu vermeidenden Farben hinzufügen:</span>
                       <div className="flex gap-2">
                         {preference_suggestions.suggestions.suggested_avoid_colors.map((color) => (
                           <Badge key={color} variant="destructive" className="capitalize">
@@ -660,7 +667,7 @@ export default function LearningPage() {
                 <div className="mt-4">
                   <Link href="/dashboard/settings">
                     <Button variant="outline" size="sm">
-                      Update Preferences
+                      Präferenzen aktualisieren
                     </Button>
                   </Link>
                 </div>
@@ -671,7 +678,7 @@ export default function LearningPage() {
           {/* Last Updated */}
           {profile.last_computed_at && (
             <p className="text-xs text-muted-foreground text-center">
-              Learning profile last updated: {new Date(profile.last_computed_at).toLocaleString()}
+              Lernprofil zuletzt aktualisiert: {new Date(profile.last_computed_at).toLocaleString('de-DE')}
             </p>
           )}
         </>

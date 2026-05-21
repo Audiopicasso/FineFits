@@ -48,7 +48,7 @@ export function FamilyRatingForm({ outfitId, existingRating, onSuccess }: Family
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      toast.error('Please select a rating');
+      toast.error('Bitte wähle eine Bewertung');
       return;
     }
     try {
@@ -57,21 +57,21 @@ export function FamilyRatingForm({ outfitId, existingRating, onSuccess }: Family
         rating,
         comment: comment.trim() || undefined,
       });
-      toast.success(existingRating ? 'Rating updated!' : 'Rating submitted!');
+      toast.success(existingRating ? 'Bewertung aktualisiert!' : 'Bewertung gesendet!');
       onSuccess?.();
     } catch {
-      toast.error('Failed to submit rating');
+      toast.error('Bewertung konnte nicht gesendet werden');
     }
   };
 
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-3">
-        <span className="text-sm font-medium">Your rating:</span>
+        <span className="text-sm font-medium">Deine Bewertung:</span>
         <StarPicker value={rating} onChange={setRating} />
       </div>
       <Textarea
-        placeholder="Add a comment (optional)"
+        placeholder="Kommentar hinzufügen (optional)"
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         rows={2}
@@ -84,7 +84,7 @@ export function FamilyRatingForm({ outfitId, existingRating, onSuccess }: Family
         disabled={rating === 0 || submitRating.isPending}
       >
         {submitRating.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {existingRating ? 'Update Rating' : 'Submit Rating'}
+        {existingRating ? 'Bewertung aktualisieren' : 'Bewertung senden'}
       </Button>
     </div>
   );
@@ -113,9 +113,9 @@ export function FamilyRatingsDisplay({ ratings, outfitId, currentUserId }: Famil
   const handleDelete = async () => {
     try {
       await deleteRating.mutateAsync(outfitId);
-      toast.success('Rating removed');
+      toast.success('Bewertung entfernt');
     } catch {
-      toast.error('Failed to remove rating');
+      toast.error('Bewertung konnte nicht entfernt werden');
     }
   };
 

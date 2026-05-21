@@ -46,9 +46,9 @@ export function GeneratePairingsDialog({
         numPairings,
       });
       setGeneratedPairings(result.pairings);
-      toast.success(`Generated ${result.generated} outfit${result.generated !== 1 ? 's' : ''}!`);
+      toast.success(`${result.generated} Outfit${result.generated !== 1 ? 's' : ''} erstellt!`);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to generate pairings';
+      const message = error instanceof Error ? error.message : 'Kombinationen konnten nicht erstellt werden';
       toast.error(message);
     }
   };
@@ -74,10 +74,10 @@ export function GeneratePairingsDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
-            Find Matching Outfits
+            Passende Outfits finden
           </DialogTitle>
           <DialogDescription>
-            AI will create complete outfits featuring this item
+            Die KI erstellt komplette Outfits mit diesem Teil
           </DialogDescription>
         </DialogHeader>
 
@@ -108,7 +108,7 @@ export function GeneratePairingsDialog({
             {/* Number of pairings selector */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label>Number of outfits</Label>
+                <Label>Anzahl der Outfits</Label>
                 <span className="text-sm font-medium text-primary">{numPairings}</span>
               </div>
               <Slider
@@ -120,7 +120,7 @@ export function GeneratePairingsDialog({
                 className="w-full"
               />
               <p className="text-xs text-muted-foreground">
-                More outfits = more variety, but takes longer to generate
+                Mehr Outfits = mehr Vielfalt, dauert aber länger
               </p>
             </div>
           </div>
@@ -132,10 +132,10 @@ export function GeneratePairingsDialog({
             </div>
             <div>
               <p className="font-medium text-lg">
-                {generatedPairings.length} outfit{generatedPairings.length !== 1 ? 's' : ''} created!
+                {generatedPairings.length} Outfit{generatedPairings.length !== 1 ? 's' : ''} erstellt!
               </p>
               <p className="text-sm text-muted-foreground mt-1">
-                View them in the Pairings section
+                Finde sie im Bereich Kombinationen
               </p>
             </div>
 
@@ -174,7 +174,7 @@ export function GeneratePairingsDialog({
           {!generatedPairings ? (
             <>
               <Button variant="outline" onClick={handleClose}>
-                Cancel
+                Abbrechen
               </Button>
               <Button
                 onClick={handleGenerate}
@@ -183,12 +183,12 @@ export function GeneratePairingsDialog({
                 {generatePairings.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Generating...
+                    Wird erstellt...
                   </>
                 ) : (
                   <>
                     <Sparkles className="h-4 w-4 mr-2" />
-                    Generate Outfits
+                    Outfits erstellen
                   </>
                 )}
               </Button>
@@ -196,10 +196,10 @@ export function GeneratePairingsDialog({
           ) : (
             <>
               <Button variant="outline" onClick={handleClose}>
-                Close
+                Schließen
               </Button>
               <Button onClick={handleViewPairings}>
-                View Pairings
+                Kombinationen anzeigen
               </Button>
             </>
           )}

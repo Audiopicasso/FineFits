@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatDistanceToNow, parseISO } from 'date-fns';
+import { de } from 'date-fns/locale';
 import {
   BookmarkCheck,
   Layers,
@@ -15,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import type { Outfit } from '@/lib/hooks/use-outfits';
+import { OCCASIONS } from '@/lib/types';
 
 interface OutfitCardProps {
   outfit: Outfit;
@@ -28,7 +30,7 @@ function getSourceBadge(outfit: Outfit): {
 } | null {
   if (outfit.replaces_outfit_id) {
     return {
-      label: 'Replacement',
+      label: 'Ersatz',
       icon: <RefreshCw className="h-3 w-3" />,
       className: 'bg-orange-100 text-orange-700 border-orange-200',
     };
@@ -39,7 +41,7 @@ function getSourceBadge(outfit: Outfit): {
     outfit.scheduled_for
   ) {
     return {
-      label: 'Worn',
+      label: 'Getragen',
       icon: <BookmarkCheck className="h-3 w-3" />,
       className: 'bg-emerald-100 text-emerald-700 border-emerald-200',
     };
@@ -53,13 +55,13 @@ function getSourceBadge(outfit: Outfit): {
   }
   if (outfit.source === 'pairing') {
     return {
-      label: 'Pairing',
+      label: 'Kombination',
       icon: <Layers className="h-3 w-3" />,
       className: 'bg-amber-100 text-amber-700 border-amber-200',
     };
   }
   return {
-    label: 'AI',
+    label: 'KI',
     icon: <Sparkles className="h-3 w-3" />,
     className: 'bg-blue-100 text-blue-700 border-blue-200',
   };
@@ -70,16 +72,18 @@ function getCardTitle(outfit: Outfit): string {
   if (outfit.highlights && outfit.highlights.length > 0) {
     return outfit.highlights[0];
   }
-  const occasion =
+  const occasionLabel =
+    OCCASIONS.find((o) => o.value === outfit.occasion)?.label ??
     outfit.occasion.charAt(0).toUpperCase() + outfit.occasion.slice(1);
-  return `${occasion} outfit`;
+  return `${occasionLabel}-Outfit`;
 }
 
 function getMetaLabel(outfit: Outfit): string {
-  if (!outfit.scheduled_for) return 'Lookbook template';
+  if (!outfit.scheduled_for) return 'Lookbook-Vorlage';
   try {
     return formatDistanceToNow(parseISO(outfit.scheduled_for), {
       addSuffix: true,
+      locale: de,
     });
   } catch {
     return outfit.scheduled_for;

@@ -320,7 +320,7 @@ async def delete_pairing(
     if not pairing:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Pairing not found",
+            detail="Kombination nicht gefunden",
         )
 
     await db.delete(pairing)

@@ -171,13 +171,13 @@ class PairingService:
         # Get source item
         source_item = await self.get_source_item(user.id, source_item_id)
         if not source_item:
-            raise ValueError("Source item not found or not available")
+            raise ValueError("Quellteil nicht gefunden oder nicht verfügbar")
 
         # Get available items
         available_items = await self.get_available_items(user, source_item_id)
         if len(available_items) < 2:
             raise InsufficientItemsError(
-                "Not enough items in wardrobe for pairing. Add more items."
+                "Nicht genug Teile im Kleiderschrank für Kombinationen. Füge mehr Teile hinzu."
             )
 
         # Get user preferences for AI endpoints

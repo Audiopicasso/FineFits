@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { format } from 'date-fns';
+import { de } from 'date-fns/locale';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -26,9 +27,13 @@ interface CloneToLookbookDialogProps {
   onSuccess?: (newOutfitId: string) => void;
 }
 
+import { OCCASIONS } from '@/lib/types';
+
 function defaultCloneName(occasion: string): string {
-  const occasionTitle = occasion.charAt(0).toUpperCase() + occasion.slice(1);
-  return `${occasionTitle} — ${format(new Date(), 'MMM d')}`;
+  const occasionLabel =
+    OCCASIONS.find((o) => o.value === occasion)?.label ??
+    occasion.charAt(0).toUpperCase() + occasion.slice(1);
+  return `${occasionLabel} — ${format(new Date(), 'd. MMM', { locale: de })}`;
 }
 
 export function CloneToLookbookDialog({
@@ -44,16 +49,16 @@ export function CloneToLookbookDialog({
   const handleConfirm = async () => {
     const trimmed = name.trim();
     if (!trimmed) {
-      toast.error('Please enter a name');
+      toast.error('Bitte gib einen Namen ein');
       return;
     }
     try {
       const result = await clone.mutateAsync({ name: trimmed });
-      toast.success('Saved to lookbook');
+      toast.success('Im Lookbook gespeichert');
       onSuccess?.(result.id);
       onClose();
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to save to lookbook'));
+      toast.error(getErrorMessage(error, 'Speichern im Lookbook fehlgeschlagen'));
     }
   };
 
@@ -61,9 +66,9 @@ export function CloneToLookbookDialog({
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Save to lookbook</DialogTitle>
+          <DialogTitle>Im Lookbook speichern</DialogTitle>
           <DialogDescription>
-            Give this look a name so you can find it later and wear it again.
+            Gib diesem Look einen Namen, damit du ihn später wiederfindest und erneut tragen kannst.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2 py-2">
@@ -73,19 +78,19 @@ export function CloneToLookbookDialog({
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={100}
-            placeholder="Friday brunch"
+            placeholder="Freitags-Brunch"
             autoFocus
           />
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={clone.isPending}>
-            Cancel
+            Abbrechen
           </Button>
           <Button
             onClick={handleConfirm}
             disabled={clone.isPending || !name.trim()}
           >
-            {clone.isPending ? 'Saving...' : 'Save'}
+            {clone.isPending ? 'Wird gespeichert...' : 'Speichern'}
           </Button>
         </DialogFooter>
       </DialogContent>

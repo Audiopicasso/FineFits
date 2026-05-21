@@ -99,10 +99,10 @@ class SuggestRequest(BaseModel):
             return None
         v = v.strip().lower()
         if len(v) > 50:
-            raise ValueError("Occasion must be 50 characters or less")
+            raise ValueError("Anlass darf maximal 50 Zeichen lang sein")
         if v not in VALID_OCCASIONS:
             raise ValueError(
-                f"Invalid occasion '{v}'. Must be one of: {', '.join(sorted(VALID_OCCASIONS))}"
+                f"Ungültiger Anlass '{v}'. Erlaubt: {', '.join(sorted(VALID_OCCASIONS))}"
             )
         return v
 
@@ -529,7 +529,7 @@ async def get_outfit(
     if not outfit:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"message": "Outfit not found", "error_code": "OUTFIT_NOT_FOUND"},
+            detail={"message": "Outfit nicht gefunden", "error_code": "OUTFIT_NOT_FOUND"},
         )
 
     return outfit_to_response(
@@ -559,7 +559,7 @@ async def accept_outfit(
     if not outfit:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"message": "Outfit not found", "error_code": "OUTFIT_NOT_FOUND"},
+            detail={"message": "Outfit nicht gefunden", "error_code": "OUTFIT_NOT_FOUND"},
         )
 
     outfit.status = OutfitStatus.accepted
@@ -594,7 +594,7 @@ async def reject_outfit(
     if not outfit:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"message": "Outfit not found", "error_code": "OUTFIT_NOT_FOUND"},
+            detail={"message": "Outfit nicht gefunden", "error_code": "OUTFIT_NOT_FOUND"},
         )
 
     outfit.status = OutfitStatus.rejected
@@ -637,7 +637,7 @@ async def delete_outfit(
     if not outfit:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"message": "Outfit not found", "error_code": "OUTFIT_NOT_FOUND"},
+            detail={"message": "Outfit nicht gefunden", "error_code": "OUTFIT_NOT_FOUND"},
         )
 
     await db.delete(outfit)
@@ -665,7 +665,7 @@ async def submit_feedback(
     if not outfit:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"message": "Outfit not found", "error_code": "OUTFIT_NOT_FOUND"},
+            detail={"message": "Outfit nicht gefunden", "error_code": "OUTFIT_NOT_FOUND"},
         )
 
     if outfit.feedback:
@@ -731,7 +731,7 @@ async def submit_feedback(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail={
                         "error_code": "OUTFIT_ITEM_OWNERSHIP",
-                        "message": "One or more items do not belong to you",
+                        "message": "Ein oder mehrere Artikel gehören dir nicht",
                     },
                 ) from None
 
@@ -780,13 +780,13 @@ async def get_feedback(
     if not outfit:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"message": "Outfit not found", "error_code": "OUTFIT_NOT_FOUND"},
+            detail={"message": "Outfit nicht gefunden", "error_code": "OUTFIT_NOT_FOUND"},
         )
 
     if not outfit.feedback:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="No feedback found for this outfit",
+            detail="Kein Feedback für dieses Outfit gefunden",
         )
 
     feedback = outfit.feedback
@@ -818,28 +818,28 @@ async def submit_family_rating(
     outfit = result.scalar_one_or_none()
 
     if not outfit:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Outfit not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Outfit nicht gefunden")
 
     if outfit.scheduled_for is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={
                 "error_code": "OUTFIT_IS_TEMPLATE",
-                "message": "Cannot rate a lookbook template",
+                "message": "Lookbook-Vorlagen können nicht bewertet werden",
             },
         )
 
     if outfit.user_id == current_user.id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot rate your own outfit",
+            detail="Du kannst dein eigenes Outfit nicht bewerten",
         )
 
     if not current_user.family_id or not outfit.user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
-                "message": "You must be in the same family to rate outfits",
+                "message": "Du musst in derselben Familie sein, um Outfits zu bewerten",
                 "error_code": "NOT_IN_FAMILY",
             },
         )
@@ -852,7 +852,7 @@ async def submit_family_rating(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
-                "message": "You must be in the same family to rate outfits",
+                "message": "Du musst in derselben Familie sein, um Outfits zu bewerten",
                 "error_code": "NOT_IN_FAMILY",
             },
         )
@@ -903,17 +903,17 @@ async def get_family_ratings(
     outfit = result.scalar_one_or_none()
 
     if not outfit:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Outfit not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Outfit nicht gefunden")
 
     if outfit.user_id != current_user.id:
         if not current_user.family_id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Zugriff verweigert")
         owner_result = await db.execute(
             select(User).where(User.id == outfit.user_id, User.is_active == True)  # noqa: E712
         )
         owner = owner_result.scalar_one_or_none()
         if not owner or owner.family_id != current_user.family_id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Zugriff verweigert")
 
     ratings_result = await db.execute(
         select(FamilyOutfitRating)
@@ -943,7 +943,7 @@ def _check_studio_kill_switch() -> None:
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail={
                 "error_code": "STUDIO_UNAVAILABLE",
-                "message": "Studio is temporarily unavailable. AI features still work.",
+                "message": "Studio ist vorübergehend nicht verfügbar. KI-Funktionen funktionieren weiterhin.",
             },
         )
 
@@ -964,7 +964,7 @@ class StudioCreateRequest(BaseModel):
         v = v.strip().lower()
         if v not in VALID_OCCASIONS:
             raise ValueError(
-                f"Invalid occasion '{v}'. Must be one of: {', '.join(sorted(VALID_OCCASIONS))}"
+                f"Ungültiger Anlass '{v}'. Erlaubt: {', '.join(sorted(VALID_OCCASIONS))}"
             )
         return v
 
@@ -1031,7 +1031,7 @@ async def create_studio_outfit(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
                 "error_code": "OUTFIT_ITEM_OWNERSHIP",
-                "message": "One or more items do not belong to you",
+                "message": "Ein oder mehrere Artikel gehören dir nicht",
             },
         ) from None
 
@@ -1068,14 +1068,14 @@ async def create_wore_instead_outfit(
     except LookupError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error_code": "OUTFIT_NOT_FOUND", "message": "Outfit not found"},
+            detail={"error_code": "OUTFIT_NOT_FOUND", "message": "Outfit nicht gefunden"},
         ) from None
     except ItemOwnershipError:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
                 "error_code": "OUTFIT_ITEM_OWNERSHIP",
-                "message": "One or more items do not belong to you",
+                "message": "Ein oder mehrere Artikel gehören dir nicht",
             },
         ) from None
 
@@ -1109,7 +1109,7 @@ async def clone_outfit_to_lookbook(
     except LookupError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error_code": "OUTFIT_NOT_FOUND", "message": "Outfit not found"},
+            detail={"error_code": "OUTFIT_NOT_FOUND", "message": "Outfit nicht gefunden"},
         ) from None
 
     await db.commit()
@@ -1139,14 +1139,14 @@ async def wear_outfit_today(
     except LookupError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error_code": "OUTFIT_NOT_FOUND", "message": "Outfit not found"},
+            detail={"error_code": "OUTFIT_NOT_FOUND", "message": "Outfit nicht gefunden"},
         ) from None
     except OutfitNotTemplateError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={
                 "error_code": "OUTFIT_NOT_TEMPLATE",
-                "message": "wear-today requires a lookbook template",
+                "message": "wear-today erfordert eine Lookbook-Vorlage",
             },
         ) from None
 
@@ -1173,7 +1173,7 @@ async def patch_outfit_endpoint(
     if request.name is None and request.items is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"error_code": "PATCH_EMPTY", "message": "No fields provided"},
+            detail={"error_code": "PATCH_EMPTY", "message": "Keine Felder angegeben"},
         )
 
     service = StudioService(db)
@@ -1187,14 +1187,14 @@ async def patch_outfit_endpoint(
     except LookupError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error_code": "OUTFIT_NOT_FOUND", "message": "Outfit not found"},
+            detail={"error_code": "OUTFIT_NOT_FOUND", "message": "Outfit nicht gefunden"},
         ) from None
     except ItemOwnershipError:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
                 "error_code": "OUTFIT_ITEM_OWNERSHIP",
-                "message": "One or more items do not belong to you",
+                "message": "Ein oder mehrere Artikel gehören dir nicht",
             },
         ) from None
     except OutfitWornImmutableError:
@@ -1202,7 +1202,7 @@ async def patch_outfit_endpoint(
             status_code=status.HTTP_409_CONFLICT,
             detail={
                 "error_code": "OUTFIT_WORN_IMMUTABLE",
-                "message": "Cannot modify items on a worn outfit. Create a new lookbook entry instead.",
+                "message": "Artikel eines getragenen Outfits können nicht geändert werden. Erstelle stattdessen einen neuen Lookbook-Eintrag.",
             },
         ) from None
 
@@ -1231,7 +1231,7 @@ async def delete_family_rating(
     if not rating:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Rating not found",
+            detail="Bewertung nicht gefunden",
         )
 
     await db.delete(rating)

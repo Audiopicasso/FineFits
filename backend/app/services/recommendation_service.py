@@ -634,7 +634,7 @@ class RecommendationService:
             weather = weather_override
         else:
             if user.location_lat is None or user.location_lon is None:
-                raise ValueError("User location not set. Please set location in settings.")
+                raise ValueError("Standort nicht festgelegt. Bitte lege deinen Standort in den Einstellungen fest.")
             try:
                 weather = await self.weather_service.get_current_weather(
                     float(user.location_lat), float(user.location_lon)
@@ -642,7 +642,7 @@ class RecommendationService:
             except WeatherServiceError as e:
                 logger.error(f"Weather service failed: {e}")
                 raise ValueError(
-                    "Could not fetch weather data. Please try again or provide weather manually."
+                    "Wetterdaten konnten nicht abgerufen werden. Bitte versuche es erneut oder gib das Wetter manuell an."
                 ) from e
 
         preferences = user.preferences

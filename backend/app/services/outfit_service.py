@@ -48,7 +48,7 @@ class OutfitService:
         if not outfit:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail={"message": "Outfit not found", "error_code": "OUTFIT_NOT_FOUND"},
+                detail={"message": "Outfit nicht gefunden", "error_code": "OUTFIT_NOT_FOUND"},
             )
 
         outfit.status = new_status
@@ -161,7 +161,7 @@ class OutfitService:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail={
-                    "message": "You must be in a family to view family member outfits",
+                    "message": "Du musst in einer Familie sein, um Outfits von Familienmitgliedern anzusehen",
                     "error_code": "NOT_IN_FAMILY",
                 },
             )
@@ -172,6 +172,6 @@ class OutfitService:
         if not member or member.family_id != current_user.family_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="User is not in your family",
+                detail="Nutzer ist nicht in deiner Familie",
             )
         return family_member_id

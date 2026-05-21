@@ -32,13 +32,13 @@ async def get_image(
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid user ID format",
+            detail="Ungültiges Benutzer-ID-Format",
         ) from e
 
     if not FILENAME_PATTERN.match(filename):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid filename format",
+            detail="Ungültiges Dateinamenformat",
         )
 
     path = f"{user_id}/{filename}"
@@ -61,7 +61,7 @@ async def get_image(
     if not can_access:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Access denied",
+            detail="Zugriff verweigert",
         )
 
     image_service = ImageService()
@@ -70,13 +70,13 @@ async def get_image(
     if not image_path.resolve().is_relative_to(image_service.storage_path.resolve()):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid path",
+            detail="Ungültiger Pfad",
         )
 
     if not image_path.exists():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Image not found",
+            detail="Bild nicht gefunden",
         )
 
     ext = filename.rsplit(".", 1)[-1].lower()

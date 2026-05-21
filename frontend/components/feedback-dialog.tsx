@@ -188,10 +188,10 @@ export function FeedbackDialog({ outfit, open, onClose }: FeedbackDialogProps) {
           wore_instead_items: selectedItems.length > 0 ? selectedItems : undefined,
         },
       });
-      toast.success('Feedback submitted');
+      toast.success('Feedback gesendet');
       onClose();
     } catch {
-      toast.error('Failed to submit feedback');
+      toast.error('Feedback konnte nicht gesendet werden');
     }
   };
 
@@ -203,10 +203,10 @@ export function FeedbackDialog({ outfit, open, onClose }: FeedbackDialogProps) {
           actually_worn: false,
         },
       });
-      toast.success('Feedback submitted');
+      toast.success('Feedback gesendet');
       onClose();
     } catch {
-      toast.error('Failed to submit feedback');
+      toast.error('Feedback konnte nicht gesendet werden');
     }
   };
 
@@ -220,9 +220,9 @@ export function FeedbackDialog({ outfit, open, onClose }: FeedbackDialogProps) {
         {step === 'wear-question' && (
           <>
             <DialogHeader>
-              <DialogTitle>Did you wear this outfit?</DialogTitle>
+              <DialogTitle>Hast du dieses Outfit getragen?</DialogTitle>
               <DialogDescription>
-                Let us know if you followed this recommendation so we can learn your preferences.
+                Sag uns, ob du dieser Empfehlung gefolgt bist – so lernen wir deine Vorlieben kennen.
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col gap-3 py-4">
@@ -236,8 +236,8 @@ export function FeedbackDialog({ outfit, open, onClose }: FeedbackDialogProps) {
                   <Check className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div className="text-left">
-                  <div className="font-medium">Yes, I wore it</div>
-                  <div className="text-sm text-muted-foreground">Rate how it went</div>
+                  <div className="font-medium">Ja, habe ich getragen</div>
+                  <div className="text-sm text-muted-foreground">Bewerte, wie es war</div>
                 </div>
               </Button>
               <Button
@@ -250,8 +250,8 @@ export function FeedbackDialog({ outfit, open, onClose }: FeedbackDialogProps) {
                   <X className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                 </div>
                 <div className="text-left">
-                  <div className="font-medium">No, I wore something else</div>
-                  <div className="text-sm text-muted-foreground">Tell us what you wore</div>
+                  <div className="font-medium">Nein, etwas anderes</div>
+                  <div className="text-sm text-muted-foreground">Sag uns, was du getragen hast</div>
                 </div>
               </Button>
             </div>
@@ -262,18 +262,18 @@ export function FeedbackDialog({ outfit, open, onClose }: FeedbackDialogProps) {
         {step === 'rating' && (
           <>
             <DialogHeader>
-              <DialogTitle>Rate This Outfit</DialogTitle>
-              <DialogDescription>How did this outfit work out for you?</DialogDescription>
+              <DialogTitle>Outfit bewerten</DialogTitle>
+              <DialogDescription>Wie hat dir dieses Outfit gefallen?</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Overall Rating</label>
+                <label className="text-sm font-medium mb-2 block">Gesamtbewertung</label>
                 <StarRating rating={rating} onRate={setRating} size="lg" />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">Comments (optional)</label>
+                <label className="text-sm font-medium mb-2 block">Kommentar (optional)</label>
                 <Textarea
-                  placeholder="Any thoughts about this outfit?"
+                  placeholder="Gedanken zu diesem Outfit?"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                 />
@@ -283,15 +283,15 @@ export function FeedbackDialog({ outfit, open, onClose }: FeedbackDialogProps) {
               {!outfit.feedback?.rating && (
                 <Button variant="ghost" onClick={() => setStep('wear-question')}>
                   <ChevronLeft className="h-4 w-4 mr-1" />
-                  Back
+                  Zurück
                 </Button>
               )}
               <div className="flex gap-2 ml-auto">
                 <Button variant="outline" onClick={onClose}>
-                  Cancel
+                  Abbrechen
                 </Button>
                 <Button onClick={handleSubmit} disabled={submitFeedback.isPending}>
-                  {submitFeedback.isPending ? 'Submitting...' : 'Submit'}
+                  {submitFeedback.isPending ? 'Wird gesendet...' : 'Senden'}
                 </Button>
               </div>
             </div>
@@ -302,9 +302,9 @@ export function FeedbackDialog({ outfit, open, onClose }: FeedbackDialogProps) {
         {step === 'wore-instead' && (
           <>
             <DialogHeader>
-              <DialogTitle>What did you wear instead?</DialogTitle>
+              <DialogTitle>Was hast du stattdessen getragen?</DialogTitle>
               <DialogDescription>
-                Select the items you actually wore. This helps us learn your preferences.
+                Wähle die Teile aus, die du wirklich getragen hast. Das hilft uns, deine Vorlieben zu lernen.
               </DialogDescription>
             </DialogHeader>
 
@@ -312,7 +312,7 @@ export function FeedbackDialog({ outfit, open, onClose }: FeedbackDialogProps) {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search your wardrobe..."
+                placeholder="Kleiderschrank durchsuchen..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9"
@@ -328,7 +328,7 @@ export function FeedbackDialog({ outfit, open, onClose }: FeedbackDialogProps) {
               {/* Selected items count */}
               {selectedItems.length > 0 && (
                 <div className="text-xs text-muted-foreground mb-2">
-                  {selectedItems.length} item{selectedItems.length !== 1 ? 's' : ''} selected
+                  {selectedItems.length} {selectedItems.length === 1 ? 'Teil' : 'Teile'} ausgewählt
                 </div>
               )}
 
@@ -382,21 +382,21 @@ export function FeedbackDialog({ outfit, open, onClose }: FeedbackDialogProps) {
               {isFetching && !isLoading && (
                 <div className="flex items-center justify-center py-4">
                   <Loader2 className="h-4 w-4 animate-spin text-muted-foreground mr-2" />
-                  <span className="text-xs text-muted-foreground">Loading more...</span>
+                  <span className="text-xs text-muted-foreground">Weitere werden geladen...</span>
                 </div>
               )}
 
               {/* Empty state */}
               {!isLoading && wardrobeItems.length === 0 && (
                 <div className="text-center text-muted-foreground py-8">
-                  {debouncedSearch ? 'No items match your search' : 'No items in wardrobe'}
+                  {debouncedSearch ? 'Keine Teile passen zur Suche' : 'Keine Teile im Kleiderschrank'}
                 </div>
               )}
 
               {/* End of results */}
               {!isLoading && !hasMore && wardrobeItems.length > 0 && (
                 <div className="text-center text-xs text-muted-foreground py-3">
-                  Showing all {totalItems} items
+                  Alle {totalItems} Teile angezeigt
                 </div>
               )}
             </div>
@@ -404,19 +404,19 @@ export function FeedbackDialog({ outfit, open, onClose }: FeedbackDialogProps) {
             <div className="flex justify-between pt-2 border-t">
               <Button variant="ghost" onClick={() => setStep('wear-question')}>
                 <ChevronLeft className="h-4 w-4 mr-1" />
-                Back
+                Zurück
               </Button>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={handleSkipWoreInstead}>
-                  Skip
+                  Überspringen
                 </Button>
                 <Button
                   onClick={handleSubmit}
                   disabled={submitFeedback.isPending || selectedItems.length === 0}
                 >
                   {submitFeedback.isPending
-                    ? 'Submitting...'
-                    : `Submit (${selectedItems.length})`}
+                    ? 'Wird gesendet...'
+                    : `Senden (${selectedItems.length})`}
                 </Button>
               </div>
             </div>

@@ -120,14 +120,14 @@ async def test_ai_endpoint(
     if not url:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="URL is required",
+            detail="URL ist erforderlich",
         )
 
     parsed = urlparse(url)
     if parsed.scheme not in ("http", "https"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only HTTP and HTTPS URLs are allowed",
+            detail="Nur HTTP- und HTTPS-URLs sind erlaubt",
         )
 
     try:

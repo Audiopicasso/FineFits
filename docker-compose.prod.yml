@@ -50,19 +50,22 @@ services:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-wardrobe}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-wardrobe}
       REDIS_URL: redis://redis:6379
       STORAGE_PATH: /data/uploads
-      AI_BASE_URL: ${AI_BASE_URL:-http://host.docker.internal:4141/v1}
+      AI_BASE_URL: ${AI_BASE_URL:-https://api.openai.com/v1}
+      AI_API_KEY: ${AI_API_KEY:-}
       AI_VISION_MODEL: ${AI_VISION_MODEL:-gpt-4o}
       AI_TEXT_MODEL: ${AI_TEXT_MODEL:-gpt-4o}
       AI_TIMEOUT: ${AI_TIMEOUT:-120}
       AI_MAX_RETRIES: ${AI_MAX_RETRIES:-3}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      APP_NAME: ${APP_NAME:-FineFits}
+      MOBILE_APP_SCHEME: ${MOBILE_APP_SCHEME:-finefits}
       SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
       # OIDC (set these if using OIDC instead of forward auth)
       OIDC_ISSUER_URL: ${OIDC_ISSUER_URL:-}
       OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-}
       OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:-}
       # Auth header from TinyAuth
-      AUTH_TRUST_HEADER: ${AUTH_TRUST_HEADER:-true}
+      AUTH_TRUST_HEADER: ${AUTH_TRUST_HEADER:-false}
       AUTH_HEADER_NAME: "Remote-User"
       # Notifications (default ntfy for form pre-fill)
       NTFY_SERVER: ${NTFY_SERVER:-}
@@ -103,12 +106,15 @@ services:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-wardrobe}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-wardrobe}
       REDIS_URL: redis://redis:6379
       STORAGE_PATH: /data/uploads
-      AI_BASE_URL: ${AI_BASE_URL:-http://host.docker.internal:4141/v1}
+      AI_BASE_URL: ${AI_BASE_URL:-https://api.openai.com/v1}
+      AI_API_KEY: ${AI_API_KEY:-}
       AI_VISION_MODEL: ${AI_VISION_MODEL:-gpt-4o}
       AI_TEXT_MODEL: ${AI_TEXT_MODEL:-gpt-4o}
       AI_TIMEOUT: ${AI_TIMEOUT:-120}
       AI_MAX_RETRIES: ${AI_MAX_RETRIES:-3}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      APP_NAME: ${APP_NAME:-FineFits}
+      MOBILE_APP_SCHEME: ${MOBILE_APP_SCHEME:-finefits}
       # Notifications
       NTFY_SERVER: ${NTFY_SERVER:-}
       NTFY_TOPIC: ${NTFY_TOPIC:-}
@@ -145,6 +151,7 @@ services:
     environment:
       NEXTAUTH_URL: ${NEXTAUTH_URL:-https://localhost:3000}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?Set NEXTAUTH_SECRET in .env}
+      NEXT_PUBLIC_APP_NAME: ${APP_NAME:-FineFits}
       NEXT_PUBLIC_API_URL: ""
       # OIDC
       OIDC_ISSUER_URL: ${OIDC_ISSUER_URL:-}

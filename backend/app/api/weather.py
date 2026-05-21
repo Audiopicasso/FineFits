@@ -61,7 +61,7 @@ async def get_current_weather(
     if lat is None or lon is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Location not set. Please provide coordinates or set your location in settings.",
+            detail="Standort nicht gesetzt. Bitte gib Koordinaten an oder lege deinen Standort in den Einstellungen fest.",
         )
 
     weather_service = WeatherService()
@@ -72,7 +72,7 @@ async def get_current_weather(
         logger.error(f"Weather service error: {e}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Weather service temporarily unavailable",
+            detail="Wetterdienst vorübergehend nicht verfügbar",
         ) from None
 
     return WeatherResponse(
@@ -104,7 +104,7 @@ async def get_weather_forecast(
     if lat is None or lon is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Location not set. Please provide coordinates or set your location in settings.",
+            detail="Standort nicht gesetzt. Bitte gib Koordinaten an oder lege deinen Standort in den Einstellungen fest.",
         )
 
     weather_service = WeatherService()
@@ -115,7 +115,7 @@ async def get_weather_forecast(
         logger.error(f"Weather service error: {e}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Weather service temporarily unavailable",
+            detail="Wetterdienst vorübergehend nicht verfügbar",
         ) from None
 
     return ForecastResponse(

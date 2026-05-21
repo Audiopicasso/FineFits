@@ -132,7 +132,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           const errorData = await response.json().catch(() => ({}));
-          const syncError = errorData.detail || `Backend sync failed (${response.status})`;
+          const syncError = errorData.detail || `Backend-Synchronisation fehlgeschlagen (${response.status})`;
           console.error('Failed to sync user to backend:', syncError);
           return {
             ...token,
@@ -146,7 +146,7 @@ export const authOptions: NextAuthOptions = {
         return {
           ...token,
           sub: user.id,
-          syncError: 'Unable to connect to backend server',
+          syncError: 'Verbindung zum Backend-Server nicht möglich',
         };
       }
       return token;

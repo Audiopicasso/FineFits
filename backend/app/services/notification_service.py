@@ -9,6 +9,7 @@ from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.branding import get_app_name
 from app.models.notification import Notification, NotificationSettings, NotificationStatus
 from app.models.outfit import Outfit, OutfitItem
 from app.models.schedule import Schedule
@@ -27,6 +28,21 @@ from app.services.notification_providers import (
 )
 
 logger = logging.getLogger(__name__)
+
+OCCASION_LABELS = {
+    "casual": "Casual",
+    "office": "Büro",
+    "formal": "Formell",
+    "date": "Date",
+    "sporty": "Sportlich",
+    "outdoor": "Outdoor",
+    "work": "Arbeit",
+    "party": "Party",
+}
+
+
+def format_occasion(occasion: str) -> str:
+    return OCCASION_LABELS.get(occasion.lower(), occasion.title())
 
 
 class DeliveryStatus(StrEnum):
@@ -84,7 +100,7 @@ class NotificationService:
             )
         )
         if existing.scalar_one_or_none():
-            raise ValueError(f"Channel {channel} already configured")
+            raise ValueError(f"Kanal {channel} ist bereits konfiguriert")
 
         setting = NotificationSettings(
             user_id=user_id,
@@ -133,7 +149,7 @@ class NotificationService:
     async def test_setting(self, setting_id: UUID, user_id: UUID) -> tuple[bool, str]:
         setting = await self.get_setting_by_id(setting_id, user_id)
         if not setting:
-            return False, "Setting not found"
+            return False, "Einstellung nicht gefunden"
 
         try:
             if setting.channel == "ntfy":
@@ -153,7 +169,7 @@ class NotificationService:
                     ExpoPushConfig(**setting.config)
                 ).test_connection()
             else:
-                return False, f"Unknown channel: {setting.channel}"
+                return False, f"Unbekannter Kanal: {setting.channel}"
 
             return success, message
         except Exception as e:
@@ -190,7 +206,7 @@ class NotificationService:
             )
         )
         if existing.scalar_one_or_none() is not None:
-            raise ValueError("An identical schedule already exists")
+            raise ValueError("Ein identischer Zeitplan existiert bereits")
 
         schedule = Schedule(
             user_id=user_id,
@@ -258,7 +274,7 @@ class NotificationDispatcher:
         )
         user = user_result.scalar_one_or_none()
         if not user:
-            raise ValueError("User not found")
+            raise ValueError("Benutzer nicht gefunden")
 
         # Get outfit with items loaded
         outfit_result = await self.db.execute(
@@ -268,7 +284,7 @@ class NotificationDispatcher:
         )
         outfit = outfit_result.scalar_one_or_none()
         if not outfit:
-            raise ValueError("Outfit not found")
+            raise ValueError("Outfit nicht gefunden")
 
         # Get enabled channels sorted by priority
         channels_result = await self.db.execute(
@@ -288,7 +304,7 @@ class NotificationDispatcher:
                 NotificationResult(
                     channel="none",
                     status=DeliveryStatus.FAILED,
-                    error="No notification channels configured",
+                    error="Keine Benachrichtigungskanäle konfiguriert",
                 )
             ]
 
@@ -332,7 +348,7 @@ class NotificationDispatcher:
                 payload={"occasion": outfit.occasion},
                 attempts=1,
                 last_attempt_at=datetime.now(UTC),
-                error_message=results[-1].error if results else "Unknown error",
+                error_message=results[-1].error if results else "Unbekannter Fehler",
             )
             self.db.add(notification)
             await self.db.flush()
@@ -348,7 +364,7 @@ class NotificationDispatcher:
             return NotificationResult(
                 channel=notification.channel,
                 status=DeliveryStatus.FAILED,
-                error="User not found",
+                error="Benutzer nicht gefunden",
             )
 
         # Get outfit with items loaded
@@ -362,7 +378,7 @@ class NotificationDispatcher:
             return NotificationResult(
                 channel=notification.channel,
                 status=DeliveryStatus.FAILED,
-                error="Outfit not found",
+                error="Outfit nicht gefunden",
             )
 
         # Get the channel config for this notification's channel
@@ -380,7 +396,7 @@ class NotificationDispatcher:
             return NotificationResult(
                 channel=notification.channel,
                 status=DeliveryStatus.FAILED,
-                error=f"Channel {notification.channel} not configured or disabled",
+                error=f"Kanal {notification.channel} nicht konfiguriert oder deaktiviert",
             )
 
         # Attempt to send
@@ -418,7 +434,7 @@ class NotificationDispatcher:
                 return NotificationResult(
                     channel=channel_config.channel,
                     status=DeliveryStatus.FAILED,
-                    error=f"Unknown channel: {channel_config.channel}",
+                    error=f"Unbekannter Kanal: {channel_config.channel}",
                 )
 
             if result.get("success"):
@@ -451,13 +467,13 @@ class NotificationDispatcher:
         condition = weather.get("condition", "").lower()
 
         # Day prefix for messages
-        day_label = "Tomorrow" if for_tomorrow else "Today"
+        day_label = "Morgen" if for_tomorrow else "Heute"
 
         # Build title with weather (ASCII-safe for HTTP headers)
         if temp is not None:
-            title = f"{day_label}'s {outfit.occasion.title()} - {temp}C"
+            title = f"{format_occasion(outfit.occasion)} für {day_label} - {temp}C"
         else:
-            title = f"{day_label}'s {outfit.occasion.title()} Outfit"
+            title = f"Outfit für {day_label}: {format_occasion(outfit.occasion)}"
 
         # Build message body with structured data
         parts = []
@@ -478,20 +494,20 @@ class NotificationDispatcher:
 
         # Add styling tip if available
         if outfit.style_notes:
-            parts.append(f"Tip: {outfit.style_notes}")
+            parts.append(f"Tipp: {outfit.style_notes}")
 
-        message = "\n\n".join(parts) if parts else "Your outfit is ready."
+        message = "\n\n".join(parts) if parts else "Dein Outfit ist bereit."
 
         # Choose a single contextual tag based on weather
         tag = "shirt"  # default
         if condition:
-            if any(w in condition for w in ["rain", "drizzle", "shower"]):
+            if any(w in condition for w in ["regen", "niesel", "schauer"]):
                 tag = "umbrella"
-            elif any(w in condition for w in ["sun", "clear"]):
+            elif any(w in condition for w in ["sonn", "klar"]):
                 tag = "sunny"
-            elif any(w in condition for w in ["cloud", "overcast"]):
+            elif any(w in condition for w in ["wolk", "bewölk", "bewoelk"]):
                 tag = "cloud"
-            elif any(w in condition for w in ["snow", "sleet"]):
+            elif any(w in condition for w in ["schnee", "schneeregen", "schneegriesel"]):
                 tag = "snowflake"
             elif any(w in condition for w in ["wind"]):
                 tag = "wind_face"
@@ -513,8 +529,8 @@ class NotificationDispatcher:
             weather = outfit.weather_data
             weather_text = f" | {weather.get('temperature', '?')}C {weather.get('condition', '')}"
 
-        day_label = "Tomorrow" if for_tomorrow else "Today"
-        greeting = "Good evening" if for_tomorrow else "Good morning"
+        day_label = "Morgen" if for_tomorrow else "Heute"
+        greeting = "Guten Abend" if for_tomorrow else "Guten Morgen"
 
         # Build message text with structured data
         text_parts = []
@@ -534,37 +550,38 @@ class NotificationDispatcher:
 
         # Add styling tip
         if outfit.style_notes:
-            text_parts.append(f"_Tip: {outfit.style_notes}_")
+            text_parts.append(f"_Tipp: {outfit.style_notes}_")
 
-        attachment_text = "\n\n".join(text_parts) if text_parts else "Your outfit is ready!"
+        attachment_text = "\n\n".join(text_parts) if text_parts else "Dein Outfit ist bereit!"
 
         attachment = MattermostAttachment(
-            title=f"{day_label}'s Outfit: {outfit.occasion.title()}{weather_text}",
+            title=f"Outfit für {day_label}: {format_occasion(outfit.occasion)}{weather_text}",
             text=attachment_text,
             color="#3B82F6",
         )
 
         return MattermostMessage(
-            text=f"{greeting}, {user.display_name}! Here's your outfit suggestion for {day_label.lower()}:",
+            text=f"{greeting}, {user.display_name}! Hier ist dein Outfit-Vorschlag für {day_label.lower()}:",
             attachments=[attachment],
         )
 
     def _build_email_message(
         self, outfit: Outfit, user: User, to: str, for_tomorrow: bool = False
     ) -> EmailMessage:
+        app_name = get_app_name()
         weather_html = ""
         if outfit.weather_data:
             weather = outfit.weather_data
-            forecast_note = " (forecast)" if for_tomorrow else ""
-            condition = html_mod.escape(str(weather.get("condition", "Unknown")))
+            forecast_note = " (Prognose)" if for_tomorrow else ""
+            condition = html_mod.escape(str(weather.get("condition", "Unbekannt")))
             weather_html = f"""
             <p style="color: #6B7280; margin: 0;">
                 {weather.get("temperature", "?")}C, {condition}{forecast_note}
             </p>
             """
 
-        day_label = "Tomorrow" if for_tomorrow else "Today"
-        occasion_escaped = html_mod.escape(outfit.occasion.title())
+        day_label = "Morgen" if for_tomorrow else "Heute"
+        occasion_escaped = html_mod.escape(format_occasion(outfit.occasion))
 
         # Build highlights HTML
         highlights_html = ""
@@ -589,13 +606,13 @@ class NotificationDispatcher:
             styling_tip_html = f"""
             <div style="background: #F3F4F6; border-radius: 8px; padding: 12px; margin: 15px 0; border: 1px solid #E5E7EB;">
                 <p style="color: #4B5563; margin: 0;">
-                    <strong style="color: #1F2937;">Tip:</strong> {html_mod.escape(outfit.style_notes)}
+                    <strong style="color: #1F2937;">Tipp:</strong> {html_mod.escape(outfit.style_notes)}
                 </p>
             </div>
             """
 
         reasoning_escaped = (
-            html_mod.escape(outfit.reasoning) if outfit.reasoning else "Your outfit is ready!"
+            html_mod.escape(outfit.reasoning) if outfit.reasoning else "Dein Outfit ist bereit!"
         )
 
         html_body = f"""
@@ -607,12 +624,12 @@ class NotificationDispatcher:
         </head>
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="text-align: center; margin-bottom: 30px;">
-                <h1 style="color: #1F2937; margin: 0;">Wardrowbe</h1>
+                <h1 style="color: #1F2937; margin: 0;">{app_name}</h1>
             </div>
 
             <div style="background: #F9FAFB; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
                 <h2 style="color: #1F2937; margin: 0 0 10px 0;">
-                    {day_label}'s Outfit: {occasion_escaped}
+                    Outfit für {day_label}: {occasion_escaped}
                 </h2>
                 {weather_html}
             </div>
@@ -629,15 +646,15 @@ class NotificationDispatcher:
             <div style="text-align: center; margin: 30px 0;">
                 <a href="{self.app_url}/dashboard/history"
                    style="background: #111827; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block; margin: 5px;">
-                    View Outfit
+                    Outfit ansehen
                 </a>
             </div>
 
             <div style="text-align: center; color: #9CA3AF; font-size: 12px; margin-top: 40px;">
-                <p>Sent by Wardrowbe</p>
+                <p>Gesendet von {app_name}</p>
                 <p>
                     <a href="{self.app_url}/dashboard/notifications" style="color: #6B7280;">
-                        Manage notification settings
+                        Benachrichtigungseinstellungen verwalten
                     </a>
                 </p>
             </div>
@@ -647,11 +664,11 @@ class NotificationDispatcher:
 
         # Build text body with highlights
         text_parts = [
-            f"Wardrowbe - {day_label}'s Outfit",
+            f"{app_name} - Outfit für {day_label}",
             "",
-            f"Occasion: {outfit.occasion.title()}",
+            f"Anlass: {format_occasion(outfit.occasion)}",
             "",
-            outfit.reasoning or "Your outfit is ready!",
+            outfit.reasoning or "Dein Outfit ist bereit!",
         ]
 
         if highlights:
@@ -661,16 +678,16 @@ class NotificationDispatcher:
 
         if outfit.style_notes:
             text_parts.append("")
-            text_parts.append(f"Tip: {outfit.style_notes}")
+            text_parts.append(f"Tipp: {outfit.style_notes}")
 
         text_parts.append("")
-        text_parts.append(f"View outfit: {self.app_url}/dashboard/history")
+        text_parts.append(f"Outfit ansehen: {self.app_url}/dashboard/history")
 
         text_body = "\n".join(text_parts)
 
         return EmailMessage(
             to=to,
-            subject=f"{day_label}'s Outfit: {occasion_escaped}",
+            subject=f"Outfit für {day_label}: {occasion_escaped}",
             html_body=html_body,
             text_body=text_body,
         )
@@ -680,20 +697,20 @@ class NotificationDispatcher:
     ) -> ExpoPushMessage:
         weather = outfit.weather_data or {}
         temp = weather.get("temperature")
-        day_label = "Tomorrow" if for_tomorrow else "Today"
+        day_label = "Morgen" if for_tomorrow else "Heute"
 
         if temp is not None:
-            title = f"{day_label}'s {outfit.occasion.title()} - {temp}\u00b0C"
+            title = f"{format_occasion(outfit.occasion)} für {day_label} - {temp}\u00b0C"
         else:
-            title = f"{day_label}'s {outfit.occasion.title()} Outfit"
+            title = f"Outfit für {day_label}: {format_occasion(outfit.occasion)}"
 
         parts = []
         if outfit.reasoning:
             parts.append(outfit.reasoning)
         if outfit.style_notes:
-            parts.append(f"Tip: {outfit.style_notes}")
+            parts.append(f"Tipp: {outfit.style_notes}")
 
-        body = " \u2022 ".join(parts) if parts else "Your outfit is ready!"
+        body = " \u2022 ".join(parts) if parts else "Dein Outfit ist bereit!"
 
         return ExpoPushMessage(
             to="",  # Provider uses its stored token

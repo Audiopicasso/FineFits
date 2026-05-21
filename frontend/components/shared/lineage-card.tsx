@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowRight, BookmarkCheck } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+import { de } from 'date-fns/locale';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { useOutfit } from '@/lib/hooks/use-outfits';
@@ -25,12 +26,12 @@ export function LineageCard({ outfit }: LineageCardProps) {
   const Icon = isReplacement ? ArrowRight : BookmarkCheck;
 
   const label = isReplacement
-    ? `Replaces ${referenced.occasion} suggestion${
+    ? `Ersetzt ${referenced.occasion}-Vorschlag${
         referenced.scheduled_for
-          ? ` from ${format(parseISO(referenced.scheduled_for), 'MMM d')}`
+          ? ` vom ${format(parseISO(referenced.scheduled_for), 'd. MMM', { locale: de })}`
           : ''
       }`
-    : `From your ${referenced.name || referenced.occasion} lookbook entry`;
+    : `Aus deinem ${referenced.name || referenced.occasion}-Lookbook-Eintrag`;
 
   return (
     <Card className="border-muted bg-muted/30">

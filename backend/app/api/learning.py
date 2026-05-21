@@ -104,15 +104,15 @@ class LearningInsightsResponse(BaseModel):
 def _interpret_score(score: float) -> str:
     """Convert numeric score to human-readable interpretation."""
     if score >= 0.5:
-        return "strongly liked"
+        return "sehr gemocht"
     elif score >= 0.2:
-        return "liked"
+        return "gemocht"
     elif score >= -0.2:
         return "neutral"
     elif score >= -0.5:
-        return "disliked"
+        return "nicht gemocht"
     else:
-        return "strongly disliked"
+        return "überhaupt nicht gemocht"
 
 
 @router.get("", response_model=LearningInsightsResponse)
@@ -384,7 +384,7 @@ async def acknowledge_insight(
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Insight not found",
+            detail="Erkenntnis nicht gefunden",
         )
 
     return {"acknowledged": True}

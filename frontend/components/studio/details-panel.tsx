@@ -35,20 +35,20 @@ function computeWarnings(items: StudioItem[]): string[] {
 
   if (!hasFullBody) {
     if (hasTop && !hasBottom) {
-      warnings.push('No bottoms selected.');
+      warnings.push('Keine Hose/Unterteil ausgewählt.');
     }
     if (hasBottom && !hasTop) {
-      warnings.push('No top selected.');
+      warnings.push('Kein Oberteil ausgewählt.');
     }
   }
 
   const bottomCount = roles.filter((r) => r === 'bottom').length;
   if (bottomCount > 1) {
-    warnings.push('Multiple bottoms selected.');
+    warnings.push('Mehrere Unterteile ausgewählt.');
   }
 
   if (items.length >= 3 && !hasFootwear) {
-    warnings.push('No footwear selected.');
+    warnings.push('Kein Schuhwerk ausgewählt.');
   }
 
   return warnings;
@@ -78,7 +78,7 @@ export function DetailsPanel({
 
   const handleAiAssist = async () => {
     if (items.length === 0 || !occasion) {
-      toast.error('Pick at least one item and an occasion first');
+      toast.error('Wähle mindestens ein Teil und einen Anlass');
       return;
     }
     setAiLoading(true);
@@ -96,20 +96,18 @@ export function DetailsPanel({
       if (skipped.length > 0) {
         for (const { item, reason } of skipped) {
           toast.info(
-            `Skipped ${item.name || item.type}: ${reason}`
+            `${item.name || item.type} übersprungen: ${reason}`
           );
         }
       } else if (merged.length > items.length) {
         toast.success(
-          `Added ${merged.length - items.length} item${
-            merged.length - items.length === 1 ? '' : 's'
-          } from AI`
+          `${merged.length - items.length} ${merged.length - items.length === 1 ? 'Teil' : 'Teile'} von der KI hinzugefügt`
         );
       } else {
-        toast.info('AI had no new items to suggest');
+        toast.info('Die KI hatte keine neuen Teile vorzuschlagen');
       }
     } catch (error) {
-      toast.error(getErrorMessage(error, 'AI assist failed'));
+      toast.error(getErrorMessage(error, 'KI-Assistenz fehlgeschlagen'));
     } finally {
       setAiLoading(false);
     }
@@ -121,27 +119,27 @@ export function DetailsPanel({
         <Label htmlFor="studio-name" className="flex items-center gap-1">
           Name
           <span className="text-xs text-muted-foreground font-normal ml-1">
-            (required for lookbook)
+            (Pflicht für Lookbook)
           </span>
         </Label>
         <Input
           id="studio-name"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
-          placeholder="Friday brunch"
+          placeholder="Freitags-Brunch"
           maxLength={100}
         />
       </div>
 
       <div className="space-y-2">
         <Label className="flex items-center gap-1">
-          Occasion
-          <span className="text-destructive" aria-label="required">*</span>
+          Anlass
+          <span className="text-destructive" aria-label="Pflichtfeld">*</span>
         </Label>
         <OccasionChips selected={occasion} onSelect={onOccasionChange} />
         {!occasion && (
           <p className="text-xs text-muted-foreground mt-1">
-            Pick an occasion before saving.
+            Wähle einen Anlass, bevor du speicherst.
           </p>
         )}
       </div>
@@ -171,12 +169,12 @@ export function DetailsPanel({
         {aiLoading ? (
           <>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            AI is thinking...
+            KI denkt nach...
           </>
         ) : (
           <>
             <Sparkles className="h-4 w-4 mr-2" />
-            Let AI finish this
+            Von KI vervollständigen lassen
           </>
         )}
       </Button>

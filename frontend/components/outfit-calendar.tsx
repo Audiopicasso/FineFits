@@ -17,6 +17,7 @@ import {
   addMonths,
   subMonths,
 } from 'date-fns';
+import { de } from 'date-fns/locale';
 import type { Outfit, OutfitSource } from '@/lib/hooks/use-outfits';
 
 interface OutfitCalendarProps {
@@ -56,8 +57,8 @@ export function OutfitCalendar({
   const calendarDays = useMemo(() => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(currentMonth);
-    const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
-    const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
+    const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+    const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
     return eachDayOfInterval({ start: calendarStart, end: calendarEnd });
   }, [currentMonth]);
@@ -72,7 +73,7 @@ export function OutfitCalendar({
     onMonthChange(next.getFullYear(), next.getMonth() + 1);
   };
 
-  const weekDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const weekDays = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 
   return (
     <div className="w-full">
@@ -82,7 +83,7 @@ export function OutfitCalendar({
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <h3 className="font-semibold text-lg">
-          {format(currentMonth, 'MMMM yyyy')}
+          {format(currentMonth, 'MMMM yyyy', { locale: de })}
         </h3>
         <Button variant="ghost" size="icon" onClick={handleNextMonth}>
           <ChevronRight className="h-4 w-4" />
@@ -157,11 +158,11 @@ export function OutfitCalendar({
       <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-primary" />
-          <span>Scheduled</span>
+          <span>Geplant</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-orange-500" />
-          <span>On-demand</span>
+          <span>Spontan</span>
         </div>
       </div>
     </div>

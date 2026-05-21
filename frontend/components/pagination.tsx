@@ -24,7 +24,7 @@ export function Pagination({ page, total, pageSize, onPageChange }: PaginationPr
         size="icon"
         disabled={page === 1}
         onClick={() => onPageChange(1)}
-        aria-label="First page"
+        aria-label="Erste Seite"
       >
         <ChevronsLeft className="h-4 w-4" />
       </Button>
@@ -33,7 +33,7 @@ export function Pagination({ page, total, pageSize, onPageChange }: PaginationPr
         size="icon"
         disabled={page === 1}
         onClick={() => onPageChange(page - 1)}
-        aria-label="Previous page"
+        aria-label="Vorherige Seite"
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -45,7 +45,7 @@ export function Pagination({ page, total, pageSize, onPageChange }: PaginationPr
         size="icon"
         disabled={page >= totalPages}
         onClick={() => onPageChange(page + 1)}
-        aria-label="Next page"
+        aria-label="Nächste Seite"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>
@@ -54,7 +54,7 @@ export function Pagination({ page, total, pageSize, onPageChange }: PaginationPr
         size="icon"
         disabled={page >= totalPages}
         onClick={() => onPageChange(totalPages)}
-        aria-label="Last page"
+        aria-label="Letzte Seite"
       >
         <ChevronsRight className="h-4 w-4" />
       </Button>

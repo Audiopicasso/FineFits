@@ -65,7 +65,7 @@ async def validation_exception_handler(
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
-            "detail": "Validation error",
+            "detail": "Validierungsfehler",
             "errors": errors,
         },
     )
@@ -81,7 +81,7 @@ async def pydantic_validation_handler(request: Request, exc: ValidationError) ->
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
-            "detail": "Validation error",
+            "detail": "Validierungsfehler",
             "errors": errors,
         },
     )
@@ -95,6 +95,6 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
-            "detail": "An unexpected error occurred. Please try again later.",
+            "detail": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es später erneut.",
         },
     )

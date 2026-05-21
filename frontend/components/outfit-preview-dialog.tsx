@@ -53,9 +53,9 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
     try {
       await rotateImage.mutateAsync({ id: currentItem.id, direction });
       setImageKey((k) => k + 1); // Force image reload
-      toast.success('Image rotated');
+      toast.success('Bild gedreht');
     } catch {
-      toast.error('Failed to rotate image');
+      toast.error('Bild konnte nicht gedreht werden');
     }
   };
 
@@ -67,12 +67,12 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
         {/* Header - sticky */}
         <div className="flex items-center justify-between p-4 pb-2 border-b flex-shrink-0">
           <div>
-            <h2 className="text-lg font-semibold capitalize">{outfit.occasion} Outfit</h2>
+            <h2 className="text-lg font-semibold capitalize">{outfit.occasion}-Outfit</h2>
             <div className="flex items-center gap-2 mt-0.5">
               {outfit.scheduled_for && (
                 <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                   <CalendarDays className="h-3 w-3" />
-                  {new Date(outfit.scheduled_for + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                  {new Date(outfit.scheduled_for + 'T00:00:00').toLocaleDateString('de-DE', { weekday: 'short', month: 'short', day: 'numeric' })}
                 </span>
               )}
               <span className="text-xs text-muted-foreground">
@@ -104,7 +104,7 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                    No image
+                    Kein Bild
                   </div>
                 )}
               </div>
@@ -165,7 +165,7 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
                   size="icon"
                   onClick={() => handleRotate('ccw')}
                   disabled={rotateImage.isPending}
-                  title="Rotate left"
+                  title="Nach links drehen"
                   className="h-8 w-8"
                 >
                   {rotateImage.isPending ? (
@@ -179,7 +179,7 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
                   size="icon"
                   onClick={() => handleRotate('cw')}
                   disabled={rotateImage.isPending}
-                  title="Rotate right"
+                  title="Nach rechts drehen"
                   className="h-8 w-8"
                 >
                   {rotateImage.isPending ? (
@@ -196,7 +196,7 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
             <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5 mt-1" asChild>
               <Link href={`/dashboard/wardrobe?item=${currentItem.id}`}>
                 <ExternalLink className="h-3 w-3" />
-                View item details
+                Teil-Details anzeigen
               </Link>
             </Button>
           </div>
@@ -254,7 +254,7 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
               {outfit.style_notes && (
                 <div className="p-3 bg-muted rounded-lg border">
                   <p className="text-sm text-muted-foreground break-words">
-                    <span className="font-medium text-foreground">Tip:</span> {outfit.style_notes}
+                    <span className="font-medium text-foreground">Tipp:</span> {outfit.style_notes}
                   </p>
                 </div>
               )}
@@ -267,11 +267,11 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold flex items-center gap-2">
                   <Users className="h-4 w-4" />
-                  Family Ratings
+                  Familienbewertungen
                   {outfit.family_rating_count != null && outfit.family_rating_count > 0 && (
                     <span className="text-muted-foreground font-normal">
                       ({outfit.family_rating_average?.toFixed(1)}{' '}
-                      <Star className="h-3 w-3 inline fill-yellow-400 text-yellow-400" /> avg)
+                      <Star className="h-3 w-3 inline fill-yellow-400 text-yellow-400" /> Ø)
                     </span>
                   )}
                 </h3>
@@ -283,7 +283,7 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
                     className="h-7 text-xs"
                   >
                     <Star className="h-3 w-3 mr-1" />
-                    Rate
+                    Bewerten
                   </Button>
                 )}
               </div>
@@ -306,12 +306,12 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
 
               {(!outfit.family_ratings || outfit.family_ratings.length === 0) && !canRate && (
                 <p className="text-xs text-muted-foreground">
-                  No family ratings yet.
+                  Noch keine Familienbewertungen.
                 </p>
               )}
               {(!outfit.family_ratings || outfit.family_ratings.length === 0) && canRate && !showRatingForm && !myRating && (
                 <p className="text-xs text-muted-foreground">
-                  No family ratings yet. Be the first to rate!
+                  Noch keine Familienbewertungen. Sei der Erste!
                 </p>
               )}
             </div>
@@ -321,7 +321,7 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
         {/* Close button at bottom - always visible */}
         <div className="border-t p-3 flex-shrink-0">
           <Button variant="outline" className="w-full" onClick={onClose}>
-            Close
+            Schließen
           </Button>
         </div>
       </DialogContent>

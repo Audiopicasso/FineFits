@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 
 import httpx
 
+from app.branding import get_app_name
 from app.schemas.notification import EmailConfig, ExpoPushConfig, MattermostConfig, NtfyConfig
 
 logger = logging.getLogger(__name__)
@@ -75,8 +76,8 @@ class NtfyProvider:
             result = await self.send(
                 NtfyNotification(
                     topic=self.topic,
-                    title="Wardrowbe Test",
-                    message="This is a test notification from Wardrowbe.",
+                    title=f"{get_app_name()} Test",
+                    message=f"This is a test notification from {get_app_name()}.",
                     tags=["white_check_mark", "shirt"],
                     priority=2,
                 )
@@ -103,7 +104,7 @@ class MattermostAttachment:
 @dataclass
 class MattermostMessage:
     text: str
-    username: str = "Wardrowbe"
+    username: str = field(default_factory=get_app_name)
     icon_emoji: str = ":shirt:"
     attachments: list[MattermostAttachment] = field(default_factory=list)
 
@@ -150,7 +151,7 @@ class MattermostProvider:
     async def test_connection(self) -> tuple[bool, str]:
         try:
             result = await self.send(
-                MattermostMessage(text="This is a test message from Wardrowbe.")
+                MattermostMessage(text=f"This is a test message from {get_app_name()}.")
             )
             if result.get("success"):
                 return True, "Test notification sent successfully"
@@ -176,7 +177,7 @@ class EmailProvider:
         self.smtp_user = os.getenv("SMTP_USER")
         self.smtp_password = os.getenv("SMTP_PASSWORD")
         self.smtp_use_tls = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
-        self.from_name = os.getenv("SMTP_FROM_NAME", "Wardrowbe")
+        self.from_name = os.getenv("SMTP_FROM_NAME", get_app_name())
         self.from_email = os.getenv("SMTP_FROM_EMAIL", self.smtp_user)
 
     def is_configured(self) -> bool:
@@ -225,9 +226,9 @@ class EmailProvider:
             result = await self.send(
                 EmailMessage(
                     to=self.to_address,
-                    subject="Wardrowbe - Test Notification",
-                    html_body="<p>This is a test email from Wardrowbe.</p>",
-                    text_body="This is a test email from Wardrowbe.",
+                    subject=f"{get_app_name()} - Test Notification",
+                    html_body=f"<p>This is a test email from {get_app_name()}.</p>",
+                    text_body=f"This is a test email from {get_app_name()}.",
                 )
             )
             if result.get("success"):
@@ -301,7 +302,7 @@ class ExpoPushProvider:
             result = await self.send(
                 ExpoPushMessage(
                     to=self.push_token,
-                    title="Wardrowbe Test",
+                    title=f"{get_app_name()} Test",
                     body="Push notifications are working!",
                 )
             )
@@ -321,6 +322,7 @@ def build_notification_email(
     cta_url: str,
     app_url: str,
 ) -> EmailMessage:
+    app_name = get_app_name()
     html_body = f"""\
 <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
     <h2 style="color: #111827;">{heading}</h2>
@@ -332,7 +334,7 @@ def build_notification_email(
         </a>
     </div>
     <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 20px 0;">
-    <p style="color: #9CA3AF; font-size: 12px;">Sent by <a href="{app_url}" style="color: #9CA3AF;">Wardrowbe</a></p>
+    <p style="color: #9CA3AF; font-size: 12px;">Sent by <a href="{app_url}" style="color: #9CA3AF;">{app_name}</a></p>
 </div>"""
     return EmailMessage(to=to, subject=subject, html_body=html_body, text_body=body)
 
@@ -344,10 +346,11 @@ def build_family_invite_email(
     invite_token: str,
     app_url: str,
 ) -> EmailMessage:
+    app_name = get_app_name()
     invite_url = f"{app_url}/invite?token={invite_token}"
-    subject = f"{inviter_name} invited you to join {family_name} on Wardrowbe"
+    subject = f"{inviter_name} invited you to join {family_name} on {app_name}"
     body_text = (
-        f'{inviter_name} invited you to join the family "{family_name}" on Wardrowbe. '
+        f'{inviter_name} invited you to join the family "{family_name}" on {app_name}. '
         f"Click here to accept: {invite_url}"
     )
     html_body = f"""\
@@ -355,7 +358,7 @@ def build_family_invite_email(
     <h2 style="color: #111827;">You&rsquo;re invited!</h2>
     <p style="color: #374151; line-height: 1.6;">
         <strong>{inviter_name}</strong> invited you to join the family
-        <strong>{family_name}</strong> on Wardrowbe.
+        <strong>{family_name}</strong> on {app_name}.
     </p>
     <div style="text-align: center; margin: 30px 0;">
         <a href="{invite_url}"
@@ -364,9 +367,9 @@ def build_family_invite_email(
         </a>
     </div>
     <p style="color: #9CA3AF; font-size: 13px;">
-        If you don&rsquo;t have a Wardrowbe account yet, you&rsquo;ll be asked to create one first.
+        If you don&rsquo;t have a {app_name} account yet, you&rsquo;ll be asked to create one first.
     </p>
     <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 20px 0;">
-    <p style="color: #9CA3AF; font-size: 12px;">Sent by <a href="{app_url}" style="color: #9CA3AF;">Wardrowbe</a></p>
+    <p style="color: #9CA3AF; font-size: 12px;">Sent by <a href="{app_url}" style="color: #9CA3AF;">{app_name}</a></p>
 </div>"""
     return EmailMessage(to=to, subject=subject, html_body=html_body, text_body=body_text)

@@ -2,14 +2,14 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
-
+import { branding } from '@/lib/branding';
 export const dynamic = 'force-dynamic';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Wardrowbe',
-  description: 'AI-powered wardrobe management and outfit recommendations',
+  title: branding.name,
+  description: branding.description,
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -37,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="de" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>{children}</Providers>
       </body>

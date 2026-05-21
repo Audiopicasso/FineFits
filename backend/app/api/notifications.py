@@ -109,7 +109,7 @@ async def get_notification_setting(
     service = NotificationService(db)
     setting = await service.get_setting_by_id(setting_id, current_user.id)
     if not setting:
-        raise HTTPException(status_code=404, detail="Setting not found")
+        raise HTTPException(status_code=404, detail="Einstellung nicht gefunden")
     return setting
 
 
@@ -126,7 +126,7 @@ async def update_notification_setting(
     if data.config is not None:
         existing = await service.get_setting_by_id(setting_id, current_user.id)
         if not existing:
-            raise HTTPException(status_code=404, detail="Setting not found")
+            raise HTTPException(status_code=404, detail="Einstellung nicht gefunden")
 
         # Validate channel-specific config
         try:
@@ -149,7 +149,7 @@ async def update_notification_setting(
         config=data.config,
     )
     if not setting:
-        raise HTTPException(status_code=404, detail="Setting not found")
+        raise HTTPException(status_code=404, detail="Einstellung nicht gefunden")
     await db.commit()
     return setting
 
@@ -163,7 +163,7 @@ async def delete_notification_setting(
     service = NotificationService(db)
     success = await service.delete_setting(setting_id, current_user.id)
     if not success:
-        raise HTTPException(status_code=404, detail="Setting not found")
+        raise HTTPException(status_code=404, detail="Einstellung nicht gefunden")
     await db.commit()
     return MessageResponse(message="Notification setting deleted")
 
@@ -197,7 +197,7 @@ async def register_push_token(
     try:
         ExpoPushConfig(push_token=data.push_token)
     except Exception:
-        raise HTTPException(status_code=400, detail="Invalid push token format") from None
+        raise HTTPException(status_code=400, detail="Ungültiges Push-Token-Format") from None
 
     # Check if expo_push channel already exists
     existing = await db.execute(
@@ -277,7 +277,7 @@ async def get_schedule(
     service = NotificationService(db)
     schedule = await service.get_schedule_by_id(schedule_id, current_user.id)
     if not schedule:
-        raise HTTPException(status_code=404, detail="Schedule not found")
+        raise HTTPException(status_code=404, detail="Zeitplan nicht gefunden")
     return schedule
 
 
@@ -303,7 +303,7 @@ async def update_schedule(
         notify_day_before=patch.get("notify_day_before"),
     )
     if not schedule:
-        raise HTTPException(status_code=404, detail="Schedule not found")
+        raise HTTPException(status_code=404, detail="Zeitplan nicht gefunden")
 
     await db.commit()
     return schedule
@@ -318,7 +318,7 @@ async def delete_schedule(
     service = NotificationService(db)
     success = await service.delete_schedule(schedule_id, current_user.id)
     if not success:
-        raise HTTPException(status_code=404, detail="Schedule not found")
+        raise HTTPException(status_code=404, detail="Zeitplan nicht gefunden")
 
     await db.commit()
     return MessageResponse(message="Schedule deleted")

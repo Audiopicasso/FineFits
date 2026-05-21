@@ -116,7 +116,7 @@ async def create_item(
     if not image_service.validate_image(content, content_type):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid image file. Supported formats: JPEG, PNG, WebP, HEIC",
+            detail="Ungültige Bilddatei. Unterstützte Formate: JPEG, PNG, WebP, HEIC",
         )
 
     # Compute hash and check for duplicates BEFORE storing
@@ -126,7 +126,7 @@ async def create_item(
         if existing:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=f"Duplicate image detected. This item already exists in your wardrobe (ID: {existing.id})",
+                detail=f"Doppeltes Bild erkannt. Dieser Artikel existiert bereits in deinem Kleiderschrank (ID: {existing.id})",
             )
     except HTTPException:
         raise
@@ -198,13 +198,13 @@ async def bulk_create_items(
     if len(images) > 20:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Maximum 20 images per bulk upload",
+            detail="Maximal 20 Bilder pro Massen-Upload",
         )
 
     if len(images) == 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="At least one image is required",
+            detail="Mindestens ein Bild ist erforderlich",
         )
 
     image_service = ImageService()
@@ -439,7 +439,7 @@ async def bulk_analyze_items(
         await db.commit()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to connect to job queue",
+            detail="Verbindung zur Job-Warteschlange fehlgeschlagen",
         ) from None
 
     try:
@@ -498,7 +498,7 @@ async def get_item(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     return ItemResponse.model_validate(item)
@@ -517,7 +517,7 @@ async def update_item(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     item = await item_service.update(item, item_data)
@@ -536,7 +536,7 @@ async def delete_item(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     # Delete images
@@ -565,7 +565,7 @@ async def archive_item(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     item = await item_service.archive(item, request.reason)
@@ -584,7 +584,7 @@ async def restore_item(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     item = await item_service.restore(item)
@@ -604,7 +604,7 @@ async def log_item_wear(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     # Use user's timezone to determine today if worn_at not provided
@@ -648,7 +648,7 @@ async def get_item_history(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     # Eagerly load outfit and its items for context
@@ -708,7 +708,7 @@ async def get_item_wear_stats(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     return await item_service.get_wear_stats(item, current_user.timezone or "UTC")
@@ -727,13 +727,13 @@ async def log_item_wash(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     if item.wears_since_wash == 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Item is already clean (0 wears since last wash)",
+            detail="Artikel ist bereits sauber (0 mal getragen seit der letzten Wäsche)",
         )
 
     # Use user's timezone to determine today if washed_at not provided
@@ -770,7 +770,7 @@ async def get_item_wash_history(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     history = await item_service.get_wash_history(item_id, limit)
@@ -789,7 +789,7 @@ async def trigger_ai_analysis(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     try:
@@ -816,7 +816,7 @@ async def trigger_ai_analysis(
         logger.error(f"Failed to queue AI analysis job: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to queue AI analysis",
+            detail="KI-Analyse konnte nicht in Warteschlange gestellt werden",
         ) from None
 
 
@@ -837,13 +837,13 @@ async def rotate_item_image(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     if not item.image_path:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Item has no image",
+            detail="Artikel hat kein Bild",
         )
 
     try:
@@ -861,7 +861,7 @@ async def rotate_item_image(
         logger.error(f"Failed to rotate image: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to rotate image",
+            detail="Bild konnte nicht gedreht werden",
         ) from None
 
 
@@ -878,13 +878,13 @@ async def remove_item_background(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     if not item.image_path:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Item has no image",
+            detail="Artikel hat kein Bild",
         )
 
     hex_color = request.bg_color.lstrip("#")
@@ -899,9 +899,9 @@ async def remove_item_background(
     except ImportError:
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            detail="Background removal provider not available. "
-            "For rembg: pip install rembg[cpu]. "
-            "For HTTP provider: set BG_REMOVAL_PROVIDER=http and BG_REMOVAL_URL.",
+            detail="Hintergrundentfernung nicht verfügbar. "
+            "Für rembg: pip install rembg[cpu]. "
+            "Für HTTP-Provider: BG_REMOVAL_PROVIDER=http und BG_REMOVAL_URL setzen.",
         ) from None
     except ValueError as e:
         raise HTTPException(
@@ -912,7 +912,7 @@ async def remove_item_background(
         logger.error(f"Failed to remove background: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to remove background",
+            detail="Hintergrundentfernung fehlgeschlagen",
         ) from None
 
 
@@ -933,7 +933,7 @@ async def add_item_image(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     # Check max images limit
@@ -944,7 +944,7 @@ async def add_item_image(
     if current_count >= 4:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Maximum of 4 additional images per item",
+            detail="Maximal 4 zusätzliche Bilder pro Artikel",
         )
 
     # Process image
@@ -955,7 +955,7 @@ async def add_item_image(
     if not image_service_inst.validate_image(content, content_type):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid image file. Supported formats: JPEG, PNG, WebP, HEIC",
+            detail="Ungültige Bilddatei. Unterstützte Formate: JPEG, PNG, WebP, HEIC",
         )
 
     try:
@@ -1001,7 +1001,7 @@ async def delete_item_image(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     result = await db.execute(
@@ -1012,7 +1012,7 @@ async def delete_item_image(
     if not item_image:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Image not found",
+            detail="Bild nicht gefunden",
         )
 
     # Delete image files
@@ -1046,7 +1046,7 @@ async def reorder_item_images(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     result = await db.execute(select(ItemImage).where(ItemImage.item_id == item_id))
@@ -1080,7 +1080,7 @@ async def set_primary_image(
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
+            detail="Artikel nicht gefunden",
         )
 
     result = await db.execute(
@@ -1091,7 +1091,7 @@ async def set_primary_image(
     if not item_image:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Image not found",
+            detail="Bild nicht gefunden",
         )
 
     # Swap paths: current primary -> additional, additional -> primary

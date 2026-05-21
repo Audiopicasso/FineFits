@@ -1,0 +1,27 @@
+# Caddy auf dem Raspberry Pi (Host, nicht im Docker-Stack)
+# Install: https://caddyserver.com/docs/install#debian-ubuntu-raspbian
+#
+# 1. Datei nach /etc/caddy/Caddyfile kopieren
+# 2. Domain anpassen
+# 3: sudo systemctl reload caddy
+#
+# FineFits läuft intern auf 127.0.0.1:8080 (nginx aus docker-compose.prod.yml)
+
+finefits.deine-domain.de {
+	encode gzip zstd
+
+	reverse_proxy 127.0.0.1:8080 {
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+	}
+
+	# Uploads bis 50 MB (Kleidungsfotos)
+	request_body {
+		max_size 50MB
+	}
+}
+
+# Optional: separater OIDC-Provider (z. B. Pocket ID)
+# auth.deine-domain.de {
+#     reverse_proxy 127.0.0.1:1411
+# }

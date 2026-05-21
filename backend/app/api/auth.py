@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.branding import get_mobile_app_scheme
 from app.config import DEFAULT_SECRET_KEY, get_settings
 from app.database import get_db
 from app.models.user import User
@@ -49,13 +50,10 @@ def _oidc_configured() -> bool:
     return bool(settings.oidc_issuer_url and settings.oidc_client_id)
 
 
-MOBILE_APP_SCHEME = "wardrowbe"
-
-
 @router.get("/mobile-callback")
 async def mobile_oidc_callback(request: Request) -> RedirectResponse:
     params = dict(request.query_params)
-    target = f"{MOBILE_APP_SCHEME}://auth/callback"
+    target = f"{get_mobile_app_scheme()}://auth/callback"
     if params:
         target = f"{target}?{urlencode(params)}"
     return RedirectResponse(url=target, status_code=302)
@@ -104,7 +102,7 @@ async def sync_user(
         if not sync_data.id_token:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="OIDC id_token is required for authentication",
+                detail="OIDC id_token ist für die Authentifizierung erforderlich",
             )
 
         valid_audiences = [settings.oidc_client_id]
@@ -129,7 +127,7 @@ async def sync_user(
         if oidc_claims.get("sub") != sync_data.external_id:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token subject does not match external_id",
+                detail="Token-Subject stimmt nicht mit external_id überein",
             )
 
         claims_email = oidc_claims.get("email", "").lower().strip()
@@ -137,7 +135,7 @@ async def sync_user(
         if claims_email and request_email and claims_email != request_email:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token email does not match request email",
+                detail="E-Mail im Token stimmt nicht mit der angeforderten E-Mail überein",
             )
 
         # Check provider migration: different external_id, same email requires verified email
@@ -147,12 +145,12 @@ async def sync_user(
             if oidc_claims.get("email_verified") is not True:
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
-                    detail="Email already associated with another account. Verified email required for migration.",
+                    detail="E-Mail ist bereits mit einem anderen Konto verknüpft. Für die Migration ist eine verifizierte E-Mail erforderlich.",
                 )
     else:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="No authentication method configured",
+            detail="Keine Authentifizierungsmethode konfiguriert",
         )
 
     user_service = UserService(db)

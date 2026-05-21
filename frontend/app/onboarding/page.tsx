@@ -21,6 +21,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { branding, unitSystemStorageKey } from '@/lib/branding';
 import {
   Select,
   SelectContent,
@@ -37,11 +38,11 @@ import { api, setAccessToken } from '@/lib/api';
 import { CLOTHING_COLORS, CLOTHING_TYPES, StyleProfile } from '@/lib/types';
 
 const STEPS = [
-  { id: 'welcome', title: 'Welcome', icon: Shirt },
-  { id: 'family', title: 'Family', icon: Users },
-  { id: 'location', title: 'Location', icon: MapPin },
-  { id: 'preferences', title: 'Style', icon: Palette },
-  { id: 'upload', title: 'First Item', icon: Camera },
+  { id: 'welcome', title: 'Willkommen', icon: Shirt },
+  { id: 'family', title: 'Familie', icon: Users },
+  { id: 'location', title: 'Standort', icon: MapPin },
+  { id: 'preferences', title: 'Stil', icon: Palette },
+  { id: 'upload', title: 'Erstes Teil', icon: Camera },
 ];
 
 function StepIndicator({ currentStep }: { currentStep: number }) {
@@ -92,10 +93,10 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
       </div>
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          Welcome to Wardrowbe{user?.display_name ? `, ${user.display_name.split(' ')[0]}` : ''}!
+          Willkommen bei {branding.name}{user?.display_name ? `, ${user.display_name.split(' ')[0]}` : ''}!
         </h1>
         <p className="text-muted-foreground mt-2 text-lg">
-          Let&apos;s get your digital wardrobe set up in just a few steps.
+          Richte deinen digitalen Kleiderschrank in wenigen Schritten ein.
         </p>
       </div>
       <div className="grid gap-4 text-left max-w-md mx-auto">
@@ -104,9 +105,9 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
             <Camera className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <p className="font-medium">Photograph your clothes</p>
+            <p className="font-medium">Fotografiere deine Kleidung</p>
             <p className="text-sm text-muted-foreground">
-              Our AI will automatically tag colors, styles, and more
+              Unsere KI taggt automatisch Farben, Stile und mehr
             </p>
           </div>
         </div>
@@ -115,9 +116,9 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
             <Palette className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <p className="font-medium">Get personalized outfits</p>
+            <p className="font-medium">Personalisierte Outfits erhalten</p>
             <p className="text-sm text-muted-foreground">
-              Daily recommendations based on weather and your style
+              Tägliche Empfehlungen basierend auf Wetter und deinem Stil
             </p>
           </div>
         </div>
@@ -126,15 +127,15 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
             <Users className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <p className="font-medium">Share with family</p>
+            <p className="font-medium">Mit der Familie teilen</p>
             <p className="text-sm text-muted-foreground">
-              Everyone can have their own personalized wardrobe
+              Jeder kann seinen eigenen personalisierten Kleiderschrank haben
             </p>
           </div>
         </div>
       </div>
       <Button size="lg" onClick={onNext}>
-        Get Started
+        Los geht&apos;s
         <ArrowRight className="ml-2 w-5 h-5" />
       </Button>
     </div>
@@ -153,10 +154,10 @@ function FamilyStep({ onNext, onSkip }: { onNext: () => void; onSkip: () => void
     if (!familyName.trim()) return;
     try {
       await createFamily.mutateAsync(familyName.trim());
-      toast.success('Family created!');
+      toast.success('Familie erstellt!');
       onNext();
     } catch (error) {
-      toast.error('Failed to create family. Please try again.');
+      toast.error('Familie konnte nicht erstellt werden. Bitte versuche es erneut.');
     }
   };
 
@@ -164,19 +165,19 @@ function FamilyStep({ onNext, onSkip }: { onNext: () => void; onSkip: () => void
     if (!inviteCode.trim()) return;
     try {
       await joinFamily.mutateAsync(inviteCode.trim().toUpperCase());
-      toast.success('Joined family!');
+      toast.success('Familie beigetreten!');
       onNext();
     } catch (error) {
-      toast.error('Invalid invite code. Please check and try again.');
+      toast.error('Ungültiger Einladungscode. Bitte prüfe ihn und versuche es erneut.');
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold tracking-tight">Family Setup</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Familie einrichten</h2>
         <p className="text-muted-foreground mt-1">
-          Create or join a family to share the wardrobe experience
+          Erstelle oder tritt einer Familie bei, um den Kleiderschrank zu teilen
         </p>
       </div>
 
@@ -188,17 +189,17 @@ function FamilyStep({ onNext, onSkip }: { onNext: () => void; onSkip: () => void
           onClick={() => setMode('create')}
         >
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Create Family</CardTitle>
-            <CardDescription>Start a new family</CardDescription>
+            <CardTitle className="text-lg">Familie erstellen</CardTitle>
+            <CardDescription>Starte eine neue Familie</CardDescription>
           </CardHeader>
           {mode === 'create' && (
             <CardContent>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="family-name">Family Name</Label>
+                  <Label htmlFor="family-name">Familienname</Label>
                   <Input
                     id="family-name"
-                    placeholder="e.g., The Smith Family"
+                    placeholder="z. B. Familie Müller"
                     value={familyName}
                     onChange={(e) => setFamilyName(e.target.value)}
                   />
@@ -209,7 +210,7 @@ function FamilyStep({ onNext, onSkip }: { onNext: () => void; onSkip: () => void
                   disabled={!familyName.trim() || createFamily.isPending}
                 >
                   {createFamily.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Create Family
+                  Familie erstellen
                 </Button>
               </div>
             </CardContent>
@@ -223,14 +224,14 @@ function FamilyStep({ onNext, onSkip }: { onNext: () => void; onSkip: () => void
           onClick={() => setMode('join')}
         >
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Join Family</CardTitle>
-            <CardDescription>Use an invite code</CardDescription>
+            <CardTitle className="text-lg">Familie beitreten</CardTitle>
+            <CardDescription>Mit Einladungscode</CardDescription>
           </CardHeader>
           {mode === 'join' && (
             <CardContent>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="invite-code">Invite Code</Label>
+                  <Label htmlFor="invite-code">Einladungscode</Label>
                   <Input
                     id="invite-code"
                     placeholder="e.g., ABC123XY"
@@ -245,10 +246,10 @@ function FamilyStep({ onNext, onSkip }: { onNext: () => void; onSkip: () => void
                   disabled={!inviteCode.trim() || joinFamily.isPending}
                 >
                   {joinFamily.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Join Family
+                  Familie beitreten
                 </Button>
                 {joinFamily.isError && (
-                  <p className="text-sm text-destructive">Invalid invite code</p>
+                  <p className="text-sm text-destructive">Ungültiger Einladungscode</p>
                 )}
               </div>
             </CardContent>
@@ -258,7 +259,7 @@ function FamilyStep({ onNext, onSkip }: { onNext: () => void; onSkip: () => void
 
       <div className="text-center">
         <Button variant="ghost" onClick={onSkip}>
-          Skip for now
+          Später
         </Button>
       </div>
     </div>
@@ -281,7 +282,7 @@ function LocationStep({
 
   const detectLocation = () => {
     if (!navigator.geolocation) {
-      toast.error('Geolocation is not supported by your browser');
+      toast.error('Geolocation wird von deinem Browser nicht unterstützt');
       return;
     }
 
@@ -294,7 +295,7 @@ function LocationStep({
         try {
           const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
-            { headers: { 'User-Agent': 'WardrobeAI/1.0' } }
+            { headers: { 'User-Agent': branding.userAgent } }
           );
           if (response.ok) {
             const data = await response.json();
@@ -315,7 +316,7 @@ function LocationStep({
       },
       (error) => {
         setDetecting(false);
-        toast.error('Could not detect location. Please enter manually.');
+        toast.error('Standort konnte nicht ermittelt werden. Bitte manuell eingeben.');
       }
     );
   };
@@ -340,10 +341,10 @@ function LocationStep({
       }
 
       await api.patch('/users/me', updateData);
-      toast.success('Location saved!');
+      toast.success('Standort gespeichert!');
       onNext();
     } catch (error) {
-      toast.error('Failed to save location. Please try again.');
+      toast.error('Standort konnte nicht gespeichert werden. Bitte versuche es erneut.');
     } finally {
       setSaving(false);
     }
@@ -352,9 +353,9 @@ function LocationStep({
   return (
     <div className="space-y-6 max-w-md mx-auto">
       <div className="text-center">
-        <h2 className="text-2xl font-bold tracking-tight">Your Location</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Dein Standort</h2>
         <p className="text-muted-foreground mt-1">
-          We use this to provide weather-appropriate outfit suggestions
+          Damit wir wettergerechte Outfit-Vorschläge machen können
         </p>
       </div>
 
@@ -371,7 +372,7 @@ function LocationStep({
             ) : (
               <MapPin className="mr-2 h-4 w-4" />
             )}
-            Detect My Location
+            Meinen Standort ermitteln
           </Button>
 
           <div className="relative">
@@ -379,15 +380,15 @@ function LocationStep({
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or enter manually</span>
+              <span className="bg-background px-2 text-muted-foreground">Oder manuell eingeben</span>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">City/Location Name</Label>
+            <Label htmlFor="location">Stadt/Standort</Label>
             <Input
               id="location"
-              placeholder="e.g., New York, NY"
+              placeholder="z. B. Berlin"
               value={locationName}
               onChange={(e) => setLocationName(e.target.value)}
             />
@@ -399,14 +400,14 @@ function LocationStep({
             disabled={!locationName.trim() || saving}
           >
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Continue
+            Weiter
           </Button>
         </CardContent>
       </Card>
 
       <div className="text-center">
         <Button variant="ghost" onClick={onSkip}>
-          Skip for now
+          Später
         </Button>
       </div>
     </div>
@@ -454,10 +455,10 @@ function PreferencesStep({ onNext, onSkip }: { onNext: () => void; onSkip: () =>
         color_avoid: avoidColors,
         style_profile: styleProfile,
       });
-      toast.success('Style preferences saved!');
+      toast.success('Stilvorlieben gespeichert!');
       onNext();
     } catch (error) {
-      toast.error('Failed to save preferences. Please try again.');
+      toast.error('Vorlieben konnten nicht gespeichert werden. Bitte versuche es erneut.');
     } finally {
       setSaving(false);
     }
@@ -466,16 +467,16 @@ function PreferencesStep({ onNext, onSkip }: { onNext: () => void; onSkip: () =>
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div className="text-center">
-        <h2 className="text-2xl font-bold tracking-tight">Your Style</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Dein Stil</h2>
         <p className="text-muted-foreground mt-1">
-          Help us understand your style preferences
+          Hilf uns, deine Stilvorlieben zu verstehen
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Favorite Colors</CardTitle>
-          <CardDescription>Tap colors you love wearing</CardDescription>
+          <CardTitle className="text-lg">Lieblingsfarben</CardTitle>
+          <CardDescription>Tippe auf Farben, die du gerne trägst</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
@@ -512,8 +513,8 @@ function PreferencesStep({ onNext, onSkip }: { onNext: () => void; onSkip: () =>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Colors to Avoid</CardTitle>
-          <CardDescription>Tap colors you prefer not to wear</CardDescription>
+          <CardTitle className="text-lg">Farben vermeiden</CardTitle>
+          <CardDescription>Tippe auf Farben, die du lieber nicht trägst</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
@@ -552,8 +553,8 @@ function PreferencesStep({ onNext, onSkip }: { onNext: () => void; onSkip: () =>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Style Profile</CardTitle>
-          <CardDescription>Adjust how much you prefer each style</CardDescription>
+          <CardTitle className="text-lg">Stilprofil</CardTitle>
+          <CardDescription>Passe an, wie sehr du jeden Stil bevorzugst</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {Object.entries(styleProfile).map(([key, value]) => (
@@ -578,11 +579,11 @@ function PreferencesStep({ onNext, onSkip }: { onNext: () => void; onSkip: () =>
 
       <div className="flex justify-between">
         <Button variant="ghost" onClick={onSkip}>
-          Skip for now
+          Später
         </Button>
         <Button onClick={handleContinue} disabled={saving}>
           {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Continue
+          Weiter
         </Button>
       </div>
     </div>
@@ -633,19 +634,19 @@ function UploadStep({ onNext, onSkip }: { onNext: () => void; onSkip: () => void
 
     try {
       await createItem.mutateAsync(formData);
-      toast.success('Item added to your wardrobe!');
+      toast.success('Teil zu deinem Kleiderschrank hinzugefügt!');
       onNext();
     } catch (error) {
-      toast.error('Failed to upload item. Please try again.');
+      toast.error('Teil konnte nicht hochgeladen werden. Bitte versuche es erneut.');
     }
   };
 
   return (
     <div className="space-y-6 max-w-md mx-auto">
       <div className="text-center">
-        <h2 className="text-2xl font-bold tracking-tight">Add Your First Item</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Dein erstes Teil</h2>
         <p className="text-muted-foreground mt-1">
-          Take a photo or upload an image of a clothing item
+          Mach ein Foto oder lade ein Bild eines Kleidungsstücks hoch
         </p>
       </div>
 
@@ -657,7 +658,7 @@ function UploadStep({ onNext, onSkip }: { onNext: () => void; onSkip: () => void
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={preview}
-                  alt="Preview"
+                  alt="Vorschau"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -666,15 +667,15 @@ function UploadStep({ onNext, onSkip }: { onNext: () => void; onSkip: () => void
                 className="w-full"
                 onClick={clearFile}
               >
-                Choose Different Photo
+                Anderes Foto wählen
               </Button>
             </div>
           ) : (
             <label className="flex flex-col items-center justify-center w-full aspect-square border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 <Camera className="w-12 h-12 text-muted-foreground mb-4" />
-                <p className="mb-2 text-sm font-medium">Click to upload or take photo</p>
-                <p className="text-xs text-muted-foreground">PNG, JPG, or HEIC</p>
+                <p className="mb-2 text-sm font-medium">Tippen zum Hochladen oder Foto aufnehmen</p>
+                <p className="text-xs text-muted-foreground">PNG, JPG oder HEIC</p>
               </div>
               <input
                 type="file"
@@ -688,10 +689,10 @@ function UploadStep({ onNext, onSkip }: { onNext: () => void; onSkip: () => void
 
           {file && (
             <div className="space-y-2">
-              <Label htmlFor="item-type">What type of clothing is this?</Label>
+              <Label htmlFor="item-type">Welche Art von Kleidung ist das?</Label>
               <Select value={itemType} onValueChange={setItemType}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select type..." />
+                  <SelectValue placeholder="Typ auswählen..." />
                 </SelectTrigger>
                 <SelectContent>
                   {CLOTHING_TYPES.map((type) => (
@@ -710,14 +711,14 @@ function UploadStep({ onNext, onSkip }: { onNext: () => void; onSkip: () => void
             disabled={!file || !itemType || createItem.isPending}
           >
             {createItem.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Add to Wardrobe
+            Zum Kleiderschrank hinzufügen
           </Button>
         </CardContent>
       </Card>
 
       <div className="text-center">
         <Button variant="ghost" onClick={onSkip}>
-          Skip for now
+          Später
         </Button>
       </div>
     </div>
@@ -733,20 +734,20 @@ function CompleteStep({ onFinish, completing }: { onFinish: () => void; completi
         </div>
       </div>
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">You&apos;re All Set!</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Alles bereit!</h1>
         <p className="text-muted-foreground mt-2 text-lg">
-          Your wardrobe is ready. Start adding clothes and get personalized outfit suggestions!
+          Dein Kleiderschrank ist eingerichtet. Füge Kleidung hinzu und erhalte personalisierte Outfit-Vorschläge!
         </p>
       </div>
       <Button size="lg" onClick={onFinish} disabled={completing}>
         {completing ? (
           <>
             <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            Finishing...
+            Wird abgeschlossen...
           </>
         ) : (
           <>
-            Go to Dashboard
+            Zur Übersicht
             <ArrowRight className="ml-2 w-5 h-5" />
           </>
         )}
@@ -778,7 +779,7 @@ export default function OnboardingPage() {
       router.push('/dashboard');
     } catch (error) {
       setCompleting(false);
-      toast.error('Failed to complete setup. Please try again.');
+      toast.error('Einrichtung konnte nicht abgeschlossen werden. Bitte versuche es erneut.');
     }
   };
 
@@ -831,7 +832,7 @@ export default function OnboardingPage() {
           <div className="flex justify-center mt-4">
             <Button variant="ghost" onClick={prevStep}>
               <ChevronLeft className="mr-2 h-4 w-4" />
-              Back
+              Zurück
             </Button>
           </div>
         )}
